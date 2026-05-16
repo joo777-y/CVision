@@ -111,7 +111,7 @@ export default function SignUpPage() {
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
       <div className="w-full max-w-sm">
 
-        <div className="absolute left-10 top-5">
+        <div className="absolute left-5 top-5">
           <button
             onClick={() => navigate("/")}
             className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-sm text-slate-600 hover:text-indigo-600 hover:border-indigo-300 transition-all shadow-sm cursor-pointer"
