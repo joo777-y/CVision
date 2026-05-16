@@ -6,7 +6,7 @@ import axios from "axios";
 // Shown after registration. Receives { email } via router state.
 // Connect backend by uncommenting the fetch calls below.
  
-export default function TempOtp() {
+export default function OtpPage() {
   const navigate  = useNavigate();
   const location  = useLocation();
   const email     = location.state?.email || "your email";
