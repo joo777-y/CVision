@@ -37,6 +37,7 @@ const FacebookIcon = () => (
 // ─── NAV ───────────────────────────────────────────────────────────────────────
 function Navbar() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("accessToken");
   return (
     <nav className="fixed top-0 left-0 w-full z-40 bg-white/95 backdrop-blur-md border-b border-indigo-100">
       <div className="max-w-6xl mx-auto px-5 h-14 flex items-center justify-between">
@@ -48,12 +49,34 @@ function Navbar() {
           <a href="#features" className="hidden sm:block text-sm text-slate-500 hover:text-indigo-700 transition-colors px-3 py-1.5 cursor-pointer">
             Features
           </a>
-          <button
-            onClick={() => navigate('/login-page')}
-            className="text-sm font-semibold text-slate-700 border border-slate-200 px-5 py-2 rounded-2xl hover:bg-slate-50 hover:border-indigo-300 transition-all duration-200 cursor-pointer"
-          >
-            Sign In
-          </button>
+          {!token ? (
+  <button
+    onClick={() => navigate('/login-page')}
+    className="text-sm font-semibold text-slate-700 border border-slate-200 px-5 py-2 rounded-2xl hover:bg-slate-50 hover:border-indigo-300 transition-all duration-200 cursor-pointer"
+  >
+    Sign In
+  </button>
+) : (
+  <div className="flex items-center gap-2">
+    <button
+      onClick={() => navigate('/dashboard')}
+      className="text-sm font-semibold text-white bg-indigo-600 px-5 py-2 rounded-2xl hover:bg-indigo-700 transition-all duration-200 cursor-pointer"
+    >
+      Dashboard
+    </button>
+
+    <button
+      onClick={() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        navigate("/");
+      }}
+      className="text-sm font-semibold text-red-500 border border-red-200 px-4 py-2 rounded-2xl hover:bg-red-50 transition-all duration-200 cursor-pointer"
+    >
+      Logout
+        </button>
+      </div>
+    )}
         </div>
       </div>
     </nav>
@@ -63,6 +86,7 @@ function Navbar() {
 // ─── HERO ──────────────────────────────────────────────────────────────────────
 function Hero() {
   const navigate = useNavigate();
+  const token = localStorage.getItem("accessToken");
   return (
     <section className="pt-28 pb-24 px-5 bg-gradient-to-br from-indigo-50 via-white to-teal-50">
       <div className="max-w-6xl mx-auto flex flex-col lg:flex-row items-center gap-12">
@@ -84,12 +108,21 @@ function Hero() {
             >
               Apply for Jobs <ArrowRight s={18} />
             </button>
-            <button
-              onClick={() => navigate('/login-page')}
-              className="border-2 border-slate-300 text-slate-700 font-semibold px-8 py-3.5 rounded-2xl text-base hover:bg-white hover:border-indigo-400 transition-all duration-300 cursor-pointer"
-            >
-              Sign In
-            </button>
+            {!token ? (
+              <button
+                onClick={() => navigate('/login-page')}
+                className="border-2 border-slate-300 text-slate-700 font-semibold px-8 py-3.5 rounded-2xl text-base hover:bg-white hover:border-indigo-400 transition-all duration-300 cursor-pointer"
+              >
+                Sign In
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="border-2 border-indigo-300 text-indigo-700 font-semibold px-8 py-3.5 rounded-2xl text-base hover:bg-white hover:border-indigo-500 transition-all duration-300 cursor-pointer"
+              >
+                Go to Dashboard
+              </button>
+            )}
           </div>
         </div>
 

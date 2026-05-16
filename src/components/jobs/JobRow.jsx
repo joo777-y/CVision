@@ -12,7 +12,7 @@ export default function JobRow({ job, onViewApplicants }) {
           }`}>{job.status}</span>
         </div>
         <div className="flex items-center gap-3 text-xs text-gray-400 flex-wrap">
-          <span className="flex items-center gap-1"><BagIcon s={12} />{job.department}</span>
+          <span className="flex items-center gap-1"><BagIcon s={12} />{job.department || "No Department"}</span>
           <span className="flex items-center gap-1"><PinIcon />{job.location}</span>
         </div>
       </div>
@@ -24,7 +24,8 @@ export default function JobRow({ job, onViewApplicants }) {
           View Applicants
         </button>
         <span className="flex items-center gap-1 text-xs text-gray-400">
-          <UsersIcon s={12} />{job.applicants} Applicants
+          <UsersIcon s={12} />
+          {job.applicationsCount || 0} Applicants
         </span>
       </div>
     </div>

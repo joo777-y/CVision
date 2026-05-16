@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiPost } from "../services/api";
 
 const ROLES = ["HR Professional", "Employee", "Manager", "Admin"];
 
@@ -45,20 +46,52 @@ export default function LoginPage() {
     // window.location.href = "/dashboard";
     // ──────────────────────────────────────────────────────────
 
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    alert(`Logged in as ${role} · ${email}`);
+          try {
+        const data = await apiPost("/auth/login", {
+          email,
+          password,
+        });
+
+        localStorage.setItem("accessToken", data.data.accessToken);
+        localStorage.setItem(
+          "user",
+          JSON.stringify(data.data.user)
+        );
+        console.log(localStorage.getItem("accessToken"));
+
+        console.log("LOGIN SUCCESS:", data);
+
+        navigate("/dashboard");
+      } catch (err) {
+        console.error(err);
+
+        setErrors({
+          form: "Invalid email or password",
+        });
+      } finally {
+        setLoading(false);
+      }
   };
 
   const navigate= useNavigate();
 
   return (
-
+    
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
+      
       <div className="w-full max-w-sm">
+        <div className="absolute left-10 top-5">
+          <button
+            onClick={() => navigate("/")}
+            className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-sm text-slate-600 hover:text-indigo-600 hover:border-indigo-300 transition-all shadow-sm cursor-pointer"
+            >← Back to Home
+          </button>
+        </div>
+        
 
         {/* Header */}
         <div className="text-center mb-8">
+          
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-600 mb-4 shadow-lg">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" fill="white" opacity=".9"/>

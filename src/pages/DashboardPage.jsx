@@ -1,16 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { BagIcon, PlusIcon, TrendIcon, UsersIcon } from "../components/ui/Icons";
 import JobRow from "../components/jobs/JobRow";
 import AppRow from "../components/applications/AppRow";
 import StatCard from "../components/ui/StatCard";
 import { useNavigate } from "react-router-dom";
+import { apiGet } from "../services/api";
 
 // ─── DASHBOARD PAGE ────────────────────────────────────────────────────────────
-export default function DashboardPage({ stats, jobs, applications}) {
+export default function DashboardPage() {
   const [tab, setTab] = useState("Active");
-  const filtered = tab === "All" ? jobs : jobs.filter(j => j.status === tab);
-
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const jobsData = dashboardData?.jobs || [];
+  const filtered =
+  tab === "All"
+    ? jobsData
+    : jobsData.filter((j) => j.status === tab.toLowerCase());
+
+
+      useEffect(() => {
+      const fetchDashboard = async () => {
+        try {
+          const res = await apiGet("/dashboard/stats");
+
+          console.log("DASHBOARD DATA:", res);
+
+          setDashboardData(res.data);
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchDashboard();
+    }, []);
+
+    if (loading) {
+      return <p className="p-6">Loading dashboard...</p>;
+    }
 
   return (
     <div>
@@ -25,10 +55,27 @@ export default function DashboardPage({ stats, jobs, applications}) {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-7">
-        <StatCard label="Active Jobs"      value={stats.activeJobs}      Icon={BagIcon}   bg="bg-blue-500"   />
-        <StatCard label="Total Applicants" value={stats.totalApplicants} Icon={UsersIcon} bg="bg-purple-500" />
-        <StatCard label="New Applications" value={stats.newApplications} Icon={TrendIcon} bg="bg-green-500"  />
-      </div>
+  <StatCard
+    label="Active Jobs"
+    value={dashboardData?.totalActiveJobs || 0}
+    Icon={BagIcon}
+    bg="bg-blue-500"
+  />
+
+  <StatCard
+    label="Total Applications"
+    value={dashboardData?.totalApplications || 0}
+    Icon={UsersIcon}
+    bg="bg-purple-500"
+  />
+
+  <StatCard
+    label="New Applications"
+    value={dashboardData?.newApplications || 0}
+    Icon={TrendIcon}
+    bg="bg-green-500"
+  />
+</div>
 
       <div className="bg-white rounded-2xl border border-gray-100 px-4 sm:px-6 py-5 mb-5">
         <h3 className="text-base font-bold text-gray-800 mb-0.5">Jobs</h3>
@@ -58,10 +105,13 @@ export default function DashboardPage({ stats, jobs, applications}) {
 
       <div className="bg-white rounded-2xl border border-gray-100 px-4 sm:px-6 py-5">
         <h3 className="text-base font-bold text-gray-800 mb-0.5">Recent Applications</h3>
+        {console.log(dashboardData?.recentApplications)}
         <p className="text-xs text-gray-400 mb-4">
           Recent job applications with candidate information and CV scores.
         </p>
-        {applications.map(app => <AppRow key={app.id} app={app} />)}
+        {dashboardData?.recentApplications?.map((app) => (
+          <AppRow key={app.id} app={app} />
+        ))}
       </div>
     </div>
   );

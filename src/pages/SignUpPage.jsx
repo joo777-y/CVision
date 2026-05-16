@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiPost } from "../services/api";
 
 const ROLES = ["HR Professional", "Employee", "Manager", "Admin"];
 
@@ -9,6 +10,8 @@ export default function SignUpPage() {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
+  const [companyWebsite, setCompanyWebsite] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -24,6 +27,11 @@ export default function SignUpPage() {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       errs.email = "Enter a valid email address.";
     if (!company.trim()) errs.company = "Company name is required.";
+    if (!companyWebsite.trim())
+      errs.companyWebsite = "Company website is required.";
+
+    if (!linkedinUrl.trim())
+      errs.linkedinUrl = "LinkedIn URL is required.";
     if (!password) errs.password = "Password is required.";
     else if (password.length < 6)
       errs.password = "Password must be at least 6 characters.";
@@ -37,26 +45,64 @@ export default function SignUpPage() {
   const handleSubmit = async () => {
     const errs = validate();
     if (Object.keys(errs).length) {
+      
       setErrors(errs);
       return;
     }
     setErrors({});
     setLoading(true);
 
-    // ── Connect your backend here ──────────────────────────────
-    // const res = await fetch("/api/auth/register", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ fullName, email, company, password, role }),
-    // });
-    // const data = await res.json();
-    // if (!res.ok) { setErrors({ form: data.message }); setLoading(false); return; }
-    // window.location.href = "/login";
-    // ──────────────────────────────────────────────────────────
 
-    await new Promise((r) => setTimeout(r, 1500));
-    setLoading(false);
-    alert(`Account created for ${fullName} · ${email}`);
+          try {
+
+        const backendRole =
+          role === "HR Professional" ? "hr" : "candidate";
+
+        const data = await apiPost("/auth/register", {
+          fullName,
+          email,
+          password,
+          companyName: company,
+          companyWebsite,
+          linkedinUrl,
+          role: backendRole,
+        });
+
+        console.log("REGISTER SUCCESS:", data);
+
+        navigate("/verify-otp", {
+          state: {
+            email: email,
+          },
+        });
+
+      } catch (err) {
+
+      console.log("REGISTER ERROR:", err.message);
+
+      let errorMessage = "Registration failed";
+
+      if (err.message) {
+        try {
+          const parsed = JSON.parse(err.message);
+
+          errorMessage =
+            parsed.errors ||
+            parsed.message ||
+            errorMessage;
+
+        } catch {
+          errorMessage = err.message;
+        }
+      }
+
+      setErrors({
+        form: errorMessage,
+      });
+
+    } finally {
+      setLoading(false);
+    }
   };
 
   const navigate = useNavigate();
@@ -64,6 +110,15 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
       <div className="w-full max-w-sm">
+
+        <div className="absolute left-10 top-5">
+          <button
+            onClick={() => navigate("/")}
+            className="px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-sm text-slate-600 hover:text-indigo-600 hover:border-indigo-300 transition-all shadow-sm cursor-pointer"
+          >
+            ← Back to Home
+          </button>
+        </div>
 
         {/* Header */}
         <div className="text-center mb-8">
@@ -74,6 +129,7 @@ export default function SignUpPage() {
             </svg>
           </div>
           <h1 className="text-3xl font-bold text-slate-800">Create an Account</h1>
+          <p className="text-slate-500 text-sm mt-1">Sign up to make you up to date</p>
         </div>
 
         {/* Card */}
@@ -199,6 +255,80 @@ export default function SignUpPage() {
               />
             </div>
             {errors.company && <p className="text-red-500 text-xs mt-1">{errors.company}</p>}
+          </div>
+
+          {/* Company Website */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              Company Website
+            </label>
+
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                🌐
+              </span>
+
+              <input
+                type="text"
+                value={companyWebsite}
+                onChange={(e) => {
+                  setCompanyWebsite(e.target.value);
+                  setErrors((p) => ({
+                    ...p,
+                    companyWebsite: undefined,
+                  }));
+                }}
+                placeholder="https://company.com"
+                className={`w-full pl-10 pr-4 py-3 rounded-xl border text-sm text-slate-800 placeholder-slate-400 bg-white outline-none transition-all focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 ${
+                  errors.companyWebsite
+                    ? "border-red-400"
+                    : "border-slate-200"
+                }`}
+              />
+            </div>
+
+            {errors.companyWebsite && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.companyWebsite}
+              </p>
+            )}
+          </div>
+
+          {/* LinkedIn Company Page */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-slate-700 mb-1.5">
+              LinkedIn Company Page
+            </label>
+
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">
+                in
+              </span>
+
+              <input
+                type="text"
+                value={linkedinUrl}
+                onChange={(e) => {
+                  setLinkedinUrl(e.target.value);
+                  setErrors((p) => ({
+                    ...p,
+                    linkedinUrl: undefined,
+                  }));
+                }}
+                placeholder="https://linkedin.com/company/..."
+                className={`w-full pl-10 pr-4 py-3 rounded-xl border text-sm text-slate-800 placeholder-slate-400 bg-white outline-none transition-all focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 ${
+                  errors.linkedinUrl
+                    ? "border-red-400"
+                    : "border-slate-200"
+                }`}
+              />
+            </div>
+
+            {errors.linkedinUrl && (
+              <p className="text-red-500 text-xs mt-1">
+                {errors.linkedinUrl}
+              </p>
+            )}
           </div>
 
           {/* Password */}

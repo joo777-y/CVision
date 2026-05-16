@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 
 // ─── APPLY PAGE ────────────────────────────────────────────────────────────────
@@ -18,8 +19,8 @@ export default function ApplyPage() {
   const EMPTY = {
     fullName:    "",
     email:       "",
-    phone:       "",
-    whatsapp:    "",
+    phoneNumber: "",
+    whatsappNumber: "",
     coverLetter: "",
   };
 
@@ -57,33 +58,96 @@ export default function ApplyPage() {
     acceptFile(e.dataTransfer.files[0]);
   };
 
-  // ── Submit ────────────────────────────────────────────────────────────────
-  const handleSubmit = async () => {
-    // Basic validation
-    if (!form.fullName || !form.email || !form.phone || !cvFile) {
-      setError("Please fill in all required fields and upload your CV.");
-      return;
-    }
-    setError(null);
-    setSubmitting(true);
-    try {
-      // ── Connect to backend: ───────────────────────────────────────────────
-      // const data = new FormData();
-      // Object.entries(form).forEach(([k, v]) => data.append(k, v));
-      // data.append("cv", cvFile);
-      // data.append("jobId", job.id);
-      // await fetch(`/api/jobs/${job.id}/apply`, { method: "POST", body: data });
-      // ─────────────────────────────────────────────────────────────────────
-      await new Promise(r => setTimeout(r, 900)); // remove when backend is ready
-      setSuccess(true);
-      setForm(EMPTY);
-      setCvFile(null);
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+      // ── Submit ────────────────────────────────────────────────────────────────
+    const handleSubmit = async () => {
+
+      // Basic validation
+      if (
+        !form.fullName ||
+        !form.email ||
+        !form.phoneNumber ||
+        !form.whatsappNumber ||
+        !cvFile
+      ) {
+        setError("Please fill in all required fields and upload your CV.");
+        return;
+      }
+
+      if (!egyptPhoneRegex.test(form.phoneNumber)) {
+        setError(
+          "Phone number must start with 010, 011, 012, or 015 and be 11 digits."
+        );
+        return;
+      }
+
+      if (!egyptPhoneRegex.test(form.whatsappNumber)) {
+        setError(
+          "WhatsApp number must start with 010, 011, 012, or 015 and be 11 digits."
+        );
+        return;
+      }
+
+      setError(null);
+      setSubmitting(true);
+
+      try {
+
+        const formData = new FormData();
+
+        formData.append("jobId", job._id || job.id);
+        formData.append("fullName", form.fullName);
+        formData.append("email", form.email);
+        formData.append("phoneNumber", form.phoneNumber);
+        formData.append("whatsappNumber", form.whatsappNumber);
+        formData.append("coverLetter", form.coverLetter);
+        formData.append("cv", cvFile);
+
+        const response = await fetch(
+          "http://localhost:5000/api/cvs/upload",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            body: formData,
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "Upload failed");
+        }
+
+        setSuccess(true);
+        setForm(EMPTY);
+        setCvFile(null);
+
+      } catch (err) {
+
+        setError(err.message || "Something went wrong.");
+
+      } finally {
+
+        setSubmitting(false);
+
+      }
+    };
+    
+    useEffect(() => {
+      if (success) {
+        toast.success("Application submitted successfully");
+      }
+    }, [success]);
+
+    useEffect(() => {
+      if (error) {
+        toast.error(error);
+      }
+    }, [error]);
+
+    const egyptPhoneRegex = /^(010|011|012|015)\d{8}$/;
+  
 
   // ── Success screen ────────────────────────────────────────────────────────
   if (success) {
@@ -102,7 +166,7 @@ export default function ApplyPage() {
             <span className="font-semibold text-gray-600">{job.company}</span> has been received.
           </p>
           <button
-            onClick={() => navigate("/apply-for-job")}
+            onClick={() => navigate(-1)}
             className="w-full bg-gradient-to-br from-teal-500 to-indigo-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
           >
             Back to Job Listings
@@ -136,11 +200,13 @@ export default function ApplyPage() {
             Apply for {job.title}
           </h2>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-gray-400">
-            <span>{job.company}</span>
+            <span>{job.department || "Unknown Company"}</span>
+
+
             <span className="w-1 h-1 rounded-full bg-gray-300" />
-            <span>{job.type}</span>
+            <span>{job.location || "Unknown Location"}</span>
             <span className="w-1 h-1 rounded-full bg-gray-300" />
-            <span>{job.employment}</span>
+            <span>{job.jobType || "Not Specified"}</span>
           </div>
         </div>
 
@@ -186,8 +252,13 @@ export default function ApplyPage() {
               </label>
               <input
                 type="tel"
-                value={form.phone} onChange={set("phone")}
-                placeholder="+20 100 000 0000"
+                value={form.phoneNumber} onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    phoneNumber: e.target.value.replace(/\D/g, "").slice(0, 11),
+                  }))
+                }
+                placeholder="01012345678"
                 className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
               />
             </div>
@@ -197,8 +268,13 @@ export default function ApplyPage() {
               </label>
               <input
                 type="tel"
-                value={form.whatsapp} onChange={set("whatsapp")}
-                placeholder="+20 100 000 0000"
+                value={form.whatsappNumber} onChange={(e) =>
+                  setForm((f) => ({
+                    ...f,
+                    whatsappNumber: e.target.value.replace(/\D/g, "").slice(0, 11),
+                  }))
+                }
+                placeholder="01012345678"
                 className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-300"
               />
             </div>

@@ -1,13 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronDown } from "../components/ui/Icons";
 import { apiPost } from "../services/api";
+import {
+  JOB_TITLES,
+  DEPARTMENTS,
+  LOCATIONS,
+  JOB_TYPES,
+} from "../data/jobOptions";
+import toast from "react-hot-toast";
 
 // ─── CREATE JOB PAGE ───────────────────────────────────────────────────────────
 export default function CreateJobPage() {
   const EMPTY = {
-    title: "", department: "", location: "", jobType: "Full time",
-    salaryRange: "", description: "", requirements: "", responsibilities: "",
+    title: "",
+    department: "",
+    location: "",
+    jobType: "full-time",
+    salaryRange: "",
+    description: "",
+    requirements: "",
+    responsibilities: "",
+    workplaceType: "onsite",
   };
+
+  const WORK_MODES = [
+    { label: "On-site", value: "onsite" },
+    { label: "Remote", value: "remote" },
+    { label: "Hybrid", value: "hybrid" },
+  ];
+
+
   const [form, setForm] = useState(EMPTY);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -19,7 +41,10 @@ export default function CreateJobPage() {
     setSubmitting(true);
     setError(null);
     try {
-      await apiPost("/jobs", { ...form, status: isDraft ? "draft" : "published" });
+      await apiPost("/jobs", {
+        ...form,
+        status: isDraft ? "draft" : "active",
+      });
       setSuccess(true);
       setForm(EMPTY);
       setTimeout(() => setSuccess(false), 3000);
@@ -29,6 +54,17 @@ export default function CreateJobPage() {
       setSubmitting(false);
     }
   };
+  useEffect(() => {
+      if (success) {
+        toast.success("Job created successfully");
+      }
+    }, [success]);
+
+    useEffect(() => {
+      if (error) {
+        toast.error(error);
+      }
+    }, [error]);
 
   return (
     <div className=" w-full">
@@ -62,9 +98,22 @@ export default function CreateJobPage() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2" />
                 </svg>
               </span>
-              <input value={form.title} onChange={set("title")}
-                placeholder="e.g. Senior Frontend Developer"
-                className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+              <select
+                value={form.title}
+                onChange={set("title")}
+                // placeholder="e.g. Senior Frontend Developer"
+                className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-400"
+              >
+                <option value="" hidden>Select job title</option>
+
+                {JOB_TITLES.map((job) => (
+                  <option key={job} value={job}>
+                    {job}
+                  </option>
+                ))}
+              </select>
+                
+                {/* className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" /> */}
             </div>
           </div>
 
@@ -80,9 +129,19 @@ export default function CreateJobPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 8v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                   </svg>
                 </span>
-                <input value={form.department} onChange={set("department")}
-                  placeholder="e.g. Engineering"
-                  className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+                <select
+                  value={form.department}
+                  onChange={set("department")}
+                  className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-400"
+                >
+                  <option value="" hidden>Select Department</option>
+
+                  {DEPARTMENTS.map((job) => (
+                    <option key={job} value={job}>
+                      {job}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div>
@@ -96,15 +155,45 @@ export default function CreateJobPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </span>
-                <input value={form.location} onChange={set("location")}
-                  placeholder="e.g. Remote, Cairo"
-                  className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
+                <select
+                  value={form.location}
+                  onChange={set("location")}
+                  className="w-full border border-gray-200 rounded-lg pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white text-gray-400"
+                >
+                  <option value="" hidden>Select location</option>
+
+                  {LOCATIONS.map((job) => (
+                    <option key={job} value={job} className="text-gray-500">
+                      {job}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
-          </div>
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                Work Mode <span className="text-red-500">*</span>
+              </label>
 
-          {/* Job Type + Salary Range */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="relative">
+                <select
+                  value={form.workplaceType}
+                  onChange={set("workplaceType")}
+                  className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none bg-white text-gray-700"
+                >
+                  {WORK_MODES.map((mode) => (
+                    <option key={mode.value} value={mode.value}>
+                      {mode.label}
+                    </option>
+                  ))}
+                </select>
+
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <ChevronDown />
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                 Job Type <span className="text-red-500">*</span>
@@ -112,8 +201,10 @@ export default function CreateJobPage() {
               <div className="relative">
                 <select value={form.jobType} onChange={set("jobType")}
                   className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-white text-gray-700">
-                  {["Full time", "Part time", "Contract", "Internship"].map(t => (
-                    <option key={t}>{t}</option>
+                  {JOB_TYPES.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
                   ))}
                 </select>
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
@@ -133,7 +224,7 @@ export default function CreateJobPage() {
               </div>
             </div>
           </div>
-
+          </div>
           {/* Description */}
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">

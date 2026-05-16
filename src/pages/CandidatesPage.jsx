@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ChevronDown, SearchIcon } from "../components/ui/Icons";
-import { MOCK_APPLICATIONS } from "../data/mockData";
 import CandidateCard from "../components/applications/CandidateCard";
 import CandidateDetailPage from "./Candidatedetailpage";
+import { apiGet } from "../services/api";
 
 // ─── CANDIDATES PAGE ───────────────────────────────────────────────────────────
 export default function CandidatesPage() {
@@ -10,11 +10,12 @@ export default function CandidatesPage() {
   const [statusFilter, setStatus]     = useState("All status");
   const [scoreFilter, setScore]       = useState("All Scores");
   const [selectedId, setSelectedId]   = useState(null); // null = list view
+  const [candidates, setCandidates] = useState([]);
 
   // When connected to backend, replace with:
   // const { data, loading, error, refetch } = useApi("/applications");
   // const applications = data || [];
-  const applications = MOCK_APPLICATIONS;
+  // const applications = MOCK_APPLICATIONS;
 
   // Local status overrides — keyed by candidate id
   // When backend is connected, this won't be needed (refetch after patch)
@@ -25,12 +26,12 @@ export default function CandidatesPage() {
   };
 
   // Merge mock data with any local overrides
-  const applicationsWithStatus = applications.map(a => ({
+  const candidatesWithStatus = candidates.map(a => ({
     ...a,
     status: statusOverrides[a.id] ?? a.status,
   }));
 
-  const filtered = applicationsWithStatus.filter(a => {
+  const filtered = candidatesWithStatus.filter(a => {
     const matchSearch =
       a.name.toLowerCase().includes(search.toLowerCase()) ||
       a.job.toLowerCase().includes(search.toLowerCase());
@@ -47,6 +48,21 @@ export default function CandidatesPage() {
 
   const statuses    = ["All status", "New", "Shortlisted", "Reviewed", "Rejected", "Hired"];
   const scoreRanges = ["All Scores", "90+", "80-89", "70-79", "Below 70"];
+
+
+  useEffect(() => {
+  const fetchCandidates = async () => {
+      try {
+        const res = await apiGet("/candidates");
+
+        setCandidates(res.data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchCandidates();
+  }, []);
 
   // ── Detail view ──────────────────────────────────────────────────────────────
   if (selectedId !== null) {

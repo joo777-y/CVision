@@ -11,11 +11,13 @@ import LoginPage from "./pages/Loginpage.jsx";
 import SignUpPage from "./pages/SignUpPage.jsx";
 import ApplyPage from "./pages/jobApplication.jsx";
 import ScrollToTop from "./components/ui/scrollToTop.jsx";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
+import OtpPage from "./pages/OtpPage.jsx";
 
 
 // ─── API CONFIG ────────────────────────────────────────────────────────────────
-const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:8000/api";
-const WS_URL = import.meta.env?.VITE_WS_URL || "ws://localhost:8000/ws";
+const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000/api";
+const WS_URL = import.meta.env?.VITE_WS_URL || "ws://localhost:5000/ws";
 
 // ─── ROOT ──────────────────────────────────────────────────────────────────────
 export default function App() {
@@ -43,18 +45,45 @@ export default function App() {
         <main className="flex-1 overflow-y-auto min-w-0">
           <ScrollToTop/>
           <Routes>
+            <Route path="*" element={<p className="text-center mt-72">
+              Ooops, Page Not Found <br/>Error 404 <br/><b>Something Went Wrong !</b>
+            </p>} />
           <Route path="/" element={<HomePage />}/>
           <Route path="/apply-for-job" element={<JobBoard />}/>
           <Route path="/login-page" element={<LoginPage />}/>
           <Route path="/sign-up-page" element={<SignUpPage />}/>
           <Route path="/job-application" element={<ApplyPage />}/>
-          <Route element={<DashboardLayout onLogout={logout} />}>
-            <Route path="/dashboard" element={
-              <DashboardPage stats={stats} jobs={jobs} applications={apps}/>
-            } />
-            <Route path="/create-job" element={<CreateJobPage />} />
-            <Route path="/candidates" element={<CandidatesPage />} />
-          </Route>
+          <Route path="/verify-otp" element={<OtpPage />} />
+
+
+          <Route
+            element={
+              <ProtectedRoute>
+                <DashboardLayout onLogout={logout} />
+              </ProtectedRoute>
+            }>
+          <Route
+            path="/dashboard"
+            element={
+              <DashboardPage
+                stats={stats}
+                jobs={jobs}
+                applications={apps}
+              />
+            }
+          />
+
+          <Route
+            path="/create-job"
+            element={<CreateJobPage />}
+          />
+
+          <Route
+            path="/candidates"
+            element={<CandidatesPage />}
+          />
+        </Route>
+
         </Routes>
         </main>
       </div>

@@ -12,11 +12,11 @@ export default function AppRow({ app }) {
     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-3.5 border-b border-gray-100 last:border-0 hover:bg-gray-50 px-1 rounded-lg transition-colors gap-2 sm:gap-0">
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2.5 mb-1 flex-wrap">
-          <span className="text-sm font-semibold text-blue-600 truncate">{app.name}</span>
+          <span className="text-sm font-semibold text-blue-600 truncate">{app.name || app.applicantName}</span>
           <StatusBadge status={app.status} />
         </div>
         <div className="flex items-center gap-1 text-xs text-gray-400">
-          <BagIcon s={12} />{app.job}
+          <BagIcon s={12} />{app.job || app.jobTitle}
         </div>
       </div>
       <div className="flex items-center gap-4 shrink-0 sm:ml-4 text-xs text-gray-400 flex-wrap">
@@ -24,7 +24,7 @@ export default function AppRow({ app }) {
           CV Score: {app.cvScore}%
         </span>
         <span className="flex items-center gap-1">
-          <CalIcon />Applied on {app.appliedOn}
+          <CalIcon />Applied on {app.appliedOn || app.appliedAt}
         </span>
       </div>
     </div>

@@ -1,58 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RejectDialog from "../components/DialogMessage/Rejectdialog";
 import ShortlistDialog from "../components/DialogMessage/Shortlistdialog";
+import { apiGet, apiPatch, apiPost } from "../services/api";
+import { toast } from "react-hot-toast";
 
 // ─── MOCK DETAIL DATA ──────────────────────────────────────────────────────────
 // When connecting to backend, replace with:
 // const { data: candidate, loading, error } = useApi(`/applications/${id}`);
-const MOCK_CANDIDATE_DETAIL = {
-  id: 1,
-  name: "Ahmed Samir",
-  job: "Senior Frontend Developer",
-  status: "new",
-  cvScore: 85,
-  skillMatch: 90,
-  experienceMatch: 85,
-  educationMatch: 80,
-  cvUrl: "#", // replace with actual CV URL from backend
-  contact: {
-    email: "Ahmed.Samir@example.com",
-    phone: "(555) 123-4567",
-    location: "New York, NY",
-    website: "Ahmedsamir.com",
-  },
-  skills: ["React", "TypeScript", "JavaScript", "HTML", "CSS", "Redux", "Node.js", "Git", "Responsive Design", "REST APIs"],
-  experience: [
-    {
-      id: 1,
-      title: "Frontend Developer",
-      company: "Tech Solutions Inc.",
-      location: "Boston, MA",
-      from: "Jan 2019",
-      to: "Present",
-      description: "Led development of responsive web applications using React and TypeScript. Implemented state management with Redux and optimized performance.",
-    },
-    {
-      id: 2,
-      title: "Junior Developer",
-      company: "WebDev Agency",
-      location: "New York, NY",
-      from: "Mar 2017",
-      to: "Dec 2018",
-      description: "Developed and maintained client websites. Collaborated with designers to implement UI/UX improvements.",
-    },
-  ],
-  education: [
-    {
-      id: 1,
-      degree: "BS Computer Science",
-      school: "University of Technology",
-      location: "New York, NY",
-      from: "2013",
-      to: "2017",
-    },
-  ],
-};
+// const MOCK_CANDIDATE_DETAIL = {
+//   id: 1,
+//   name: "Ahmed Samir",
+//   job: "Senior Frontend Developer",
+//   status: "new",
+//   cvScore: 85,
+//   skillMatch: 90,
+//   experienceMatch: 85,
+//   educationMatch: 80,
+//   cvUrl: "#", // replace with actual CV URL from backend
+//   contact: {
+//     email: "Ahmed.Samir@example.com",
+//     phone: "(555) 123-4567",
+//     location: "New York, NY",
+//     website: "Ahmedsamir.com",
+//   },
+//   skills: ["React", "TypeScript", "JavaScript", "HTML", "CSS", "Redux", "Node.js", "Git", "Responsive Design", "REST APIs"],
+//   experience: [
+//     {
+//       id: 1,
+//       title: "Frontend Developer",
+//       company: "Tech Solutions Inc.",
+//       location: "Boston, MA",
+//       from: "Jan 2019",
+//       to: "Present",
+//       description: "Led development of responsive web applications using React and TypeScript. Implemented state management with Redux and optimized performance.",
+//     },
+//     {
+//       id: 2,
+//       title: "Junior Developer",
+//       company: "WebDev Agency",
+//       location: "New York, NY",
+//       from: "Mar 2017",
+//       to: "Dec 2018",
+//       description: "Developed and maintained client websites. Collaborated with designers to implement UI/UX improvements.",
+//     },
+//   ],
+//   education: [
+//     {
+//       id: 1,
+//       degree: "BS Computer Science",
+//       school: "University of Technology",
+//       location: "New York, NY",
+//       from: "2013",
+//       to: "2017",
+//     },
+//   ],
+// };
+
+
 
 // ─── ICONS ─────────────────────────────────────────────────────────────────────
 const Ico = ({ size = 16, children }) => (
@@ -81,7 +85,11 @@ const STATUS_STYLES = {
   rejected:    "bg-red-100 text-red-700",
   hired:       "bg-green-100 text-green-700",
 };
+
+
+
 function StatusBadge({ status }) {
+  
   return (
     <span className={`text-xs px-3 py-1 rounded-full font-medium capitalize ${STATUS_STYLES[status] || "bg-gray-100 text-gray-600"}`}>
       {status}
@@ -189,35 +197,121 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
   // if (loading) return <LoadingSpinner />;
   // if (error)   return <ErrorState message={error} />;
   // ─────────────────────────────────────────────────────────────────────────────
-  const candidate = MOCK_CANDIDATE_DETAIL;
+  const [candidate, setCandidate] = useState(null);
 
-  const [status, setStatus]       = useState(candidate.status);
+  const [status, setStatus] = useState("new");
+
   const [updating, setUpdating]   = useState(false);
   const [confirmType, setConfirm] = useState(null); // "rejected" | "shortlisted" | null
 
   // Reset to null first so switching between dialogs forces a clean
   // unmount → remount, preventing the wrong dialog from staying open.
   const openConfirm = (type) => {
-    setConfirm(null);
-    setTimeout(() => setConfirm(type), 0);
+    setConfirm(type);
   };
 
   const handleStatusChange = async () => {
-    if (!confirmType) return;
-    setUpdating(true);
-    try {
-      // ── Connect to backend: ─────────────────────────────────────────────────
-      // await apiPatch(`/applications/${candidateId}`, { status: confirmType });
-      // ───────────────────────────────────────────────────────────────────────
-      setStatus(confirmType);
-      onStatusChange?.(candidateId, confirmType);
-    } catch (err) {
-      console.error("Failed to update status:", err);
-    } finally {
-      setUpdating(false);
-      setConfirm(null);
+  if (!confirmType) return;
+
+  setUpdating(true);
+
+  try {
+    const endpoint =
+      confirmType === "rejected"
+        ? `/cvs/${candidateId}/reject`
+        : `/cvs/${candidateId}/accept`;
+
+    await apiPost(endpoint);
+
+    setStatus(confirmType);
+
+    onStatusChange?.(candidateId, confirmType);
+
+    // ✅ Toast Success
+   if (confirmType === "rejected") {
+      toast.error("Candidate rejected successfully", {
+        style: {
+          background: "#fee2e2",
+          color: "#b91c1c",
+        },
+        icon: "✕",
+      });
+    } else {
+      toast.success("Candidate shortlisted successfully");
     }
-  };
+
+  } catch (err) {
+    console.error("Failed to update status:", err);
+
+    // ❌ Toast Error
+    toast.error("Failed to update candidate status");
+
+  } finally {
+    setUpdating(false);
+    setConfirm(null);
+  }
+};
+
+  useEffect(() => {
+    const fetchCandidate = async () => {
+      try {
+        const res = await apiGet(`/candidates/${candidateId}`);
+
+        setCandidate(res.data);
+        console.log("CANDIDATE =>", res.data);
+
+        setStatus(res.data.status);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchCandidate();
+  }, [candidateId]);
+
+  const handleViewCV = async () => {
+  try {
+    const token = localStorage.getItem("accessToken");
+
+    const response = await fetch(
+      `http://localhost:5000/api/cvs/${candidate.id}/download`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to download CV");
+    }
+
+    const blob = await response.blob();
+
+    const fileURL = window.URL.createObjectURL(blob);
+
+    window.open(fileURL, "_blank");
+
+    // ✅ Success Toast
+    toast.success("CV downloaded successfully");
+
+  } catch (error) {
+    console.error(error);
+
+    // ❌ Error Toast
+    toast.error("Failed to download CV");
+  }
+};
+
+  if (!candidate) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <p className="text-gray-400">Loading candidate...</p>
+      </div>
+    );
+  }
+
+  
 
   return (
     <div className="w-full">
@@ -303,14 +397,13 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
               <ProgressBar label="Experience Match" value={candidate.experienceMatch} />
               <ProgressBar label="Education Match"  value={candidate.educationMatch}  />
             </div>
-            <a
-              href={candidate.cvUrl}
-              target="_blank"
-              rel="noreferrer"
+           <button
+              onClick={handleViewCV}
               className="mt-4 w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
             >
-              <FileIcon /> View Full CV
-            </a>
+              <FileIcon />
+              View Full CV
+            </button>
           </div>
 
           {/* Contact Information */}
@@ -319,27 +412,31 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-gray-500">
                 <span className="text-gray-400"><MailIcon /></span>
-                <a href={`mailto:${candidate.contact.email}`}
+                <a href={`mailto:${candidate.email}`}
                   className="hover:text-blue-600 transition-colors truncate">
-                  {candidate.contact.email}
+                  {candidate.email}
                 </a>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-500">
                 <span className="text-gray-400"><PhoneIcon /></span>
-                <a href={`tel:${candidate.contact.phone}`}
+                <a href={`tel:${candidate.phoneNumber}`}
                   className="hover:text-blue-600 transition-colors">
-                  {candidate.contact.phone}
+                  {candidate.phoneNumber}
                 </a>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-500">
                 <span className="text-gray-400"><PinIcon /></span>
-                <span>{candidate.contact.location}</span>
+                <span>{candidate.contact?.location || "Not provided"}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-gray-500">
                 <span className="text-gray-400"><GlobeIcon /></span>
-                <a href={`https://${candidate.contact.website}`} target="_blank" rel="noreferrer"
+                <a href={
+                  candidate.contact?.website
+                    ? `https://${candidate.contact.website}`
+                    : "#"
+                } target="_blank" rel="noreferrer"
                   className="hover:text-blue-600 transition-colors truncate">
-                  {candidate.contact.website}
+                  {candidate.contact?.location || "Not provided"}
                 </a>
               </div>
             </div>
@@ -349,7 +446,7 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
           <div className="bg-white rounded-2xl border border-gray-100 px-5 py-5">
             <h3 className="text-sm font-bold text-gray-700 mb-4">Skills</h3>
             <div className="flex flex-wrap gap-2">
-              {candidate.skills.map(skill => (
+              {(candidate.skills || []).map(skill => (
                 <span key={skill}
                   className="text-xs px-3 py-1.5 rounded-full bg-blue-50 text-blue-600 font-medium border border-blue-100">
                   {skill}
@@ -369,7 +466,7 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
               <h3 className="text-sm font-bold text-gray-700">Work Experience</h3>
             </div>
             <div className="space-y-5">
-              {candidate.experience.map(item => (
+              {(candidate.experience || []).map(item => (
                 <ExperienceItem key={item.id} item={item} />
               ))}
             </div>
@@ -382,9 +479,15 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
               <h3 className="text-sm font-bold text-gray-700">Education</h3>
             </div>
             <div className="space-y-5">
-              {candidate.education.map(item => (
-                <EducationItem key={item.id} item={item} />
-              ))}
+              {Array.isArray(candidate.education) ? (
+            candidate.education.map((item, index) => (
+              <EducationItem key={index} item={item} />
+            ))
+          ) : (
+            <p className="text-sm text-gray-500">
+              {candidate.education || "No education data"}
+            </p>
+          )}
             </div>
           </div>
 

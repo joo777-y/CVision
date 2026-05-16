@@ -1,25 +1,48 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { apiGet } from "../services/api";
 
-// ============================================================
-// MOCK DATA — replace with fetch from API
-// ============================================================
-const MOCK_JOBS = [
-  { id: 1, title: "Senior Frontend Developer", company: "Acme Inc.",      type: "Remote", employment: "Full-time", postedDays: 2, initials: "A", color: "bg-blue-500"   },
-  { id: 2, title: "Product Manager",           company: "Tech Solutions", type: "Onsite", employment: "Full-time", postedDays: 3, initials: "T", color: "bg-yellow-500" },
-  { id: 3, title: "UI/UX Designer",            company: "Creative Studio",type: "Remote", employment: "Full-time", postedDays: 5, initials: "C", color: "bg-orange-400" },
-  { id: 4, title: "Marketing Specialist",      company: "GrowCo.",        type: "Hybrid", employment: "Full-time", postedDays: 6, initials: "G", color: "bg-green-500"  },
-  { id: 5, title: "Backend Developer",         company: "Data Systems",   type: "Remote", employment: "Full-time", postedDays: 7, initials: "D", color: "bg-purple-500" },
-];
+function JobDescription({ jobId }) {
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobDetails = async () => {
+      try {
+        const res = await apiGet(`/jobs/${jobId}`);
+
+        console.log("JOB DETAILS =>", res);
+
+        setDescription(res.data.job.description);
+      } catch (err) {
+        console.error("Failed to fetch job details", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobDetails();
+  }, [jobId]);
+
+  return (
+    <div className="mt-3 text-xs text-gray-500 border-t pt-3">
+      {loading ? (
+        <p>Loading description...</p>
+      ) : (
+        <p>{description}</p>
+      )}
+    </div>
+  );
+}
 
 const JOB_TYPES = ["All Types", "Remote", "Onsite", "Hybrid"];
 
 // ============================================================
 // JobCard Component
 // ============================================================
-function JobCard({ job}) {
+function JobCard({ job, onApply }){
   const [expanded, setExpanded] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   return (
     <div className="bg-white border border-gray-200 rounded-md px-5 py-4 flex items-center justify-between hover:shadow-md transition-shadow">
@@ -33,7 +56,7 @@ function JobCard({ job}) {
           <p className="text-blue-600 font-semibold text-sm truncate hover:underline cursor-pointer">
             {job.title}
           </p>
-          <p className="text-gray-500 text-xs mt-0.5">{job.company}</p>
+          <p className="text-gray-500 text-xs mt-0.5">{job.department || "Company"}</p>
 
           <div className="flex items-center gap-4 mt-2 flex-wrap">
             <span className="flex items-center gap-1 text-xs text-gray-500">
@@ -43,7 +66,7 @@ function JobCard({ job}) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
               </svg>
-              {job.type}
+              {job.location}
             </span>
 
             <span className="flex items-center gap-1 text-xs text-gray-500">
@@ -51,7 +74,7 @@ function JobCard({ job}) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 0H8m8 0a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2"/>
               </svg>
-              {job.employment}
+              {job.jobType}
             </span>
 
             <span className="flex items-center gap-1 text-xs text-gray-500">
@@ -59,23 +82,21 @@ function JobCard({ job}) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              {job.postedDays}d ago
+              Recently posted
             </span>
           </div>
 
           {/* Expanded Details */}
-          {expanded && (
-            <div className="mt-3 text-xs text-gray-500 border-t pt-3">
-              <p>Job description goes here. Fetch full details from <code>/api/jobs/{job.id}</code>.</p>
-            </div>
-          )}
+            {expanded && (
+              <JobDescription jobId={job.id} />
+            )}
         </div>
       </div>
 
       {/* Right: Buttons */}
       <div className="flex items-center gap-2 ml-4 flex-shrink-0">
         <button
-          onClick={() => navigate('/job-application')}
+          onClick={() => onApply(job)}
           className="bg-gradient-to-br from-teal-500 to-indigo-600 hover:opacity-90 hover:bg-blue-700 text-white text-xs font-medium px-4 py-2 rounded transition-colors cursor-pointer"
         >
           Apply Now
@@ -102,41 +123,60 @@ function JobCard({ job}) {
 export default function JobBoard() {
   const navigate = useNavigate();
 
-  const [jobs]                  = useState(MOCK_JOBS);
+  const [jobs, setJobs] = useState([]);
   const [keyword, setKeyword]   = useState("");
   const [location, setLocation] = useState("");
   const [jobType, setJobType]   = useState("All Types");
-  const [loading]               = useState(false);
+  const [loading,setLoading]    = useState(false);
 
   // ----------------------------------------------------------
   // Fetch jobs from backend — uncomment when ready
   // ----------------------------------------------------------
-  // useEffect(() => {
-  //   setLoading(true);
-  //   const params = new URLSearchParams();
-  //   if (keyword)  params.set("keyword",  keyword);
-  //   if (location) params.set("location", location);
-  //   if (jobType !== "All Types") params.set("type", jobType);
-  //   fetch(`/api/jobs?${params.toString()}`)
-  //     .then(r => r.json())
-  //     .then(data => setJobs(data))
-  //     .catch(console.error)
-  //     .finally(() => setLoading(false));
-  // }, [keyword, location, jobType]);
+    useEffect(() => {
+      const fetchJobs = async () => {
+        try {
+          setLoading(true);
+
+          const res = await apiGet("/jobs");
+
+          console.log("JOBS =>", res);
+
+          setJobs(res.data.jobs || []);
+        } catch (err) {
+          console.error("Failed to fetch jobs", err);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchJobs();
+    }, []);
 
   // Client-side filtering — remove when using backend filtering
   const filtered = jobs.filter(job => {
-    const matchKeyword  = job.title.toLowerCase().includes(keyword.toLowerCase())
-                       || job.company.toLowerCase().includes(keyword.toLowerCase());
-    const matchLocation = !location || job.type.toLowerCase().includes(location.toLowerCase());
-    const matchType     = jobType === "All Types" || job.type === jobType;
-    return matchKeyword && matchLocation && matchType;
-  });
+  const matchKeyword =
+    job.title.toLowerCase().includes(keyword.toLowerCase()) ||
+    job.department?.toLowerCase().includes(keyword.toLowerCase());
+
+      const matchLocation =
+        !location ||
+        job.location.toLowerCase().includes(location.toLowerCase());
+
+      const normalize = (str) =>
+        str?.toLowerCase().replace(/\s+/g, "");
+
+      const matchType =
+        jobType === "All Types" ||
+        normalize(job.location) === normalize(jobType);
+
+      return matchKeyword && matchLocation && matchType;
+    });
 
   // Navigate to apply page, passing job data via router state
   const handleApply = (job) => {
-    navigate("/apply", { state: { job } });
+    navigate("/job-application", { state: { job } });
   };
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
