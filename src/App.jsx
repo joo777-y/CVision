@@ -12,7 +12,7 @@ import SignUpPage from "./pages/SignUpPage.jsx";
 import ApplyPage from "./pages/jobApplication.jsx";
 import ScrollToTop from "./components/ui/scrollToTop.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
-import OtpPage from "./pages/OtpPage.jsx";
+import Page from "./pages/Page.jsx";
 
 // ─── API CONFIG ────────────────────────────────────────────────────────────────
 const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000/api";
@@ -52,7 +52,7 @@ export default function App() {
           <Route path="/login-page" element={<LoginPage />}/>
           <Route path="/sign-up-page" element={<SignUpPage />}/>
           <Route path="/job-application" element={<ApplyPage />}/>
-          <Route path="/verify-otp" element={<OtpPage />} />
+          <Route path="/verify-otp" element={<Page />} />
 
 
           <Route
