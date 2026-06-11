@@ -218,7 +218,7 @@ export default function CreateJobPage() {
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm font-medium">$</span>
-                <input value={form.salaryRange} onChange={set("salaryRange")}
+                <input type="number" value={form.salaryRange} onChange={set("salaryRange")}
                   placeholder="e.g. 15000 - 20000"
                   className="w-full border border-gray-200 rounded-lg pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400" />
               </div>

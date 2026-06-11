@@ -35,9 +35,6 @@ export const DEPARTMENTS = [
 ];
 
 export const LOCATIONS = [
-  "Remote",
-  "Hybrid",
-  "On-site",
   "Cairo",
   "Giza",
   "Alexandria",
@@ -45,7 +42,16 @@ export const LOCATIONS = [
   "Aswan",
   "Luxor",
   "Hurghada",
-  "Bani suef"
+  "Bani suef",
+  "Saudi Arabia",
+  "Kuwait",
+  "UAE",
+  "Qatar",
+  "Bahrein",
+  "Oman",
+  "Europe",
+  "USA",
+  "Canada",
 ];
 
 export const JOB_TYPES = [

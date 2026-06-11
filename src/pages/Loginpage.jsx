@@ -33,19 +33,7 @@ export default function LoginPage() {
     }
     setErrors({});
     setLoading(true);
-
-    // ── Connect your backend here ──────────────────────────────
-    // const res = await fetch("/api/auth/login", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ email, password, role, remember }),
-    // });
-    // const data = await res.json();
-    // if (!res.ok) { setErrors({ form: data.message }); setLoading(false); return; }
-    // localStorage.setItem("token", data.token);
-    // window.location.href = "/dashboard";
-    // ──────────────────────────────────────────────────────────
-
+    
           try {
         const data = await apiPost("/auth/login", {
           email,

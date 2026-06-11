@@ -3,7 +3,7 @@ import { BagIcon, PlusIcon, TrendIcon, UsersIcon } from "../components/ui/Icons"
 import JobRow from "../components/jobs/JobRow";
 import AppRow from "../components/applications/AppRow";
 import StatCard from "../components/ui/StatCard";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { apiGet } from "../services/api";
 
 // ─── DASHBOARD PAGE ────────────────────────────────────────────────────────────
@@ -88,7 +88,7 @@ export default function DashboardPage() {
               key={t}
               onClick={() => setTab(t)}
               className={`cursor-pointer pb-2.5 text-sm font-medium transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                tab === t ? "text-blue-600 border-blue-600" : "text-gray-400 border-transparent hover:text-gray-600"
+                tab === t ? "text-blue-600 border-blue-600" : "text-gray-400 border-transparent hover:text-gray-600 "
               }`}
             >
               {t}
@@ -98,7 +98,7 @@ export default function DashboardPage() {
         {filtered.map(job => (
           <JobRow
             key={job.id} job={job}
-            onViewApplicants={(j) => console.log("View applicants:", j.title)}
+            onViewApplicants={(j) => navigate(`/candidates`)}
           />
         ))}
       </div>

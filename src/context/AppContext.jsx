@@ -10,6 +10,7 @@ export function AppProvider({ children }) {
     name: "HR Manager",
     role: "HR"
   });
+  
 
   const [accessToken, setToken] = useState(localStorage.getItem("accessToken"));
 
