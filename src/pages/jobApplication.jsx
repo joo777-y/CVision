@@ -103,7 +103,7 @@ export default function ApplyPage() {
         formData.append("cv", cvFile);
 
         const response = await fetch(
-          "http://localhost:5000/api/cvs/upload",
+          `${import.meta.env.VITE_API_URL}/api/cvs/upload`,
           {
             method: "POST",
             headers: {

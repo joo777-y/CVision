@@ -274,7 +274,7 @@ export default function CandidateDetailPage({ candidateId, onBack, onStatusChang
     const token = localStorage.getItem("accessToken");
 
     const response = await fetch(
-      `http://localhost:5000/api/cvs/${candidate.id}/download`,
+      `${import.meta.env.VITE_API_URL}/api/cvs/${candidate.id}/download`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
