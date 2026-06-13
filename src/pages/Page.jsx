@@ -71,7 +71,7 @@ export default function Page() {
     setError("");
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/verify-email`,
+        `${import.meta.env.VITE_API_URL}/auth/verify-email`,
         {
             email,
             code,
