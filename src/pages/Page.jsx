@@ -20,6 +20,7 @@ export default function Page() {
   const [error, setError]     = useState("");
   const [loading, setLoading] = useState(false);
   const [countdown, setCount] = useState(30);
+  const [resending, setResending] = useState(false);
   const inputsRef = useRef([]);
   const timerRef  = useRef(null);
 
@@ -108,29 +109,37 @@ export default function Page() {
  
   // ── Resend ──────────────────────────────────────────────────────────────────
   const handleResend = async () => {
-    try {
+    if (resending) return;
 
-      await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/resend-verification`,
-        {
-          email,
-        }
-      );
+      setResending(true);
 
-      setOtp(Array(6).fill(""));
-      setError("");
+      startTimer(); 
+  try {
+    setResending(true);
 
-      startTimer();
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/resend-verification`,
+      {
+        email,
+      }
+    );
 
-      inputsRef.current[0]?.focus();
+    setOtp(Array(6).fill(""));
+    setError("");
 
-    } catch (error) {
-      setError(
-        error.response?.data?.message ||
-        "Failed to resend verification code"
-      );
-    }
-  };
+    startTimer();
+
+    inputsRef.current[0]?.focus();
+  } catch (error) {
+    setCount(0);
+    setError(
+      error.response?.data?.message ||
+      "Failed to resend verification code"
+    );
+  } finally {
+    setResending(false);
+  }
+};
  
   const isComplete = otp.every(d => d !== "");
  
@@ -225,9 +234,10 @@ export default function Page() {
             ) : (
               <button
                 onClick={handleResend}
-                className="text-xs text-indigo-600 font-semibold hover:text-indigo-800 transition-colors cursor-pointer"
+                disabled={resending}
+                className="text-xs text-indigo-600 font-semibold disabled:opacity-50"
               >
-                Resend code
+                {resending ? "Sending..." : "Resend code"}
               </button>
             )}
           </div>
