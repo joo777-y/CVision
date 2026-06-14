@@ -51,10 +51,12 @@ export default function LoginPage() {
 
         navigate("/dashboard");
       } catch (err) {
-        console.error(err);
+        console.error("LOGIN ERROR:", err);
 
         setErrors({
-          form: "Invalid email or password",
+          form:
+            err?.response?.data?.message ||
+            "Unknown error",
         });
       } finally {
         setLoading(false);
