@@ -12,10 +12,21 @@ export async function apiPost(endpoint, body) {
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-  const errorData = await res.json();
-  console.log("BACKEND ERROR:", errorData);
+  const text = await res.text();
 
-  throw new Error(JSON.stringify(errorData));
+  console.log("RAW ERROR RESPONSE:", text);
+
+  try {
+    const errorData = JSON.parse(text);
+
+    console.log("BACKEND ERROR:", errorData);
+
+    throw new Error(
+      errorData.message || "Request failed"
+    );
+  } catch {
+    throw new Error(text || "Request failed");
+  }
 }
   return res.json();
 }
@@ -31,10 +42,21 @@ export async function apiPatch(endpoint, body) {
     body: JSON.stringify(body),
   });
   if (!res.ok) {
-  const errorData = await res.json();
-  console.log("BACKEND ERROR:", errorData);
+  const text = await res.text();
 
-  throw new Error(JSON.stringify(errorData));
+  console.log("RAW ERROR RESPONSE:", text);
+
+  try {
+    const errorData = JSON.parse(text);
+
+    console.log("BACKEND ERROR:", errorData);
+
+    throw new Error(
+      errorData.message || "Request failed"
+    );
+  } catch {
+    throw new Error(text || "Request failed");
+  }
 }
   return res.json();
 }
@@ -50,11 +72,22 @@ export async function apiGet(endpoint) {
     },
   });
 
-  if (!res.ok) {
-  const errorData = await res.json();
-  console.log("BACKEND ERROR:", errorData);
+ if (!res.ok) {
+  const text = await res.text();
 
-  throw new Error(JSON.stringify(errorData));
+  console.log("RAW ERROR RESPONSE:", text);
+
+  try {
+    const errorData = JSON.parse(text);
+
+    console.log("BACKEND ERROR:", errorData);
+
+    throw new Error(
+      errorData.message || "Request failed"
+    );
+  } catch {
+    throw new Error(text || "Request failed");
+  }
 }
 
   return res.json();
