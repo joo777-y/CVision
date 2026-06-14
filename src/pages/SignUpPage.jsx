@@ -70,6 +70,10 @@ export default function SignUpPage() {
 
         console.log("REGISTER SUCCESS:", data);
 
+        localStorage.setItem(
+          "pendingVerificationEmail",
+          email
+        );
         navigate("/verify-otp", {
           state: {
             email: email,

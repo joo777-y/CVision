@@ -9,7 +9,12 @@ import axios from "axios";
 export default function Page() {
   const navigate  = useNavigate();
   const location  = useLocation();
-  const email     = location.state?.email || "your email";
+  const email =
+    location.state?.email ||
+    localStorage.getItem(
+      "pendingVerificationEmail"
+    ) ||
+    "";
  
   const [otp, setOtp]         = useState(Array(6).fill(""));
   const [error, setError]     = useState("");
@@ -17,6 +22,12 @@ export default function Page() {
   const [countdown, setCount] = useState(30);
   const inputsRef = useRef([]);
   const timerRef  = useRef(null);
+
+  useEffect(() => {
+    if (!email) {
+      navigate("/login-page");
+    }
+  }, [email, navigate]);
  
   // Start countdown on mount
   useEffect(() => {
@@ -73,12 +84,16 @@ export default function Page() {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/auth/verify-email`,
         {
-            email,
-            code,
+          email,
+          code,
         }
-        );
+      );
 
-        navigate("/login-page");
+      localStorage.removeItem(
+        "pendingVerificationEmail"
+      );
+
+      navigate("/login-page");
     } catch (error) {
       setError(
         error.response?.data?.message ||
@@ -94,13 +109,27 @@ export default function Page() {
   // ── Resend ──────────────────────────────────────────────────────────────────
   const handleResend = async () => {
     try {
-      // await fetch("/api/auth/send-otp", { method: "POST", body: JSON.stringify({ email }) });
-      await new Promise(r => setTimeout(r, 400));
+
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/resend-verification`,
+        {
+          email,
+        }
+      );
+
       setOtp(Array(6).fill(""));
       setError("");
+
       startTimer();
+
       inputsRef.current[0]?.focus();
-    } catch { /* handle silently */ }
+
+    } catch (error) {
+      setError(
+        error.response?.data?.message ||
+        "Failed to resend verification code"
+      );
+    }
   };
  
   const isComplete = otp.every(d => d !== "");
