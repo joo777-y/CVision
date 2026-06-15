@@ -13,6 +13,8 @@ import ApplyPage from "./pages/jobApplication.jsx";
 import ScrollToTop from "./components/ui/scrollToTop.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import Page from "./pages/Page.jsx";
+import ForgotPassword from "./pages/ForgotPassword.jsx";
+import ResetPassword from "./pages/ResetPassword.jsx";
 
 // ─── API CONFIG ────────────────────────────────────────────────────────────────
 const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000/api";
@@ -21,15 +23,6 @@ const WS_URL = import.meta.env?.VITE_WS_URL || "ws://localhost:5000/ws";
 // ─── ROOT ──────────────────────────────────────────────────────────────────────
 export default function App() {
 
-  // ── Uncomment to connect to backend: ─────────────────────────────────────────
-  // const { data: statsData, loading: statsLoading } = useApi("/dashboard/stats");
-  // const { data: jobsData,  loading: jobsLoading  } = useApi("/jobs");
-  // const { data: appsData,  loading: appsLoading  } = useApi("/applications/recent");
-  // useWebSocket((msg) => console.log("Live event:", msg));
-  // const stats = statsData || MOCK_STATS;
-  // const jobs  = jobsData  || MOCK_JOBS;
-  // const apps  = appsData  || MOCK_APPLICATIONS;
-  // ─────────────────────────────────────────────────────────────────────────────
   const stats = MOCK_STATS;
   const jobs  = MOCK_JOBS;
   const apps  = MOCK_APPLICATIONS;
@@ -53,6 +46,8 @@ export default function App() {
           <Route path="/sign-up-page" element={<SignUpPage />}/>
           <Route path="/job-application" element={<ApplyPage />}/>
           <Route path="/verify-otp" element={<Page />} />
+          <Route path="/forgot-password" element={<ForgotPassword />}/>
+          <Route path="/reset-password" element={<ResetPassword />}/>
 
 
           <Route

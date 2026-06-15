@@ -235,7 +235,7 @@ export default function Page() {
               <button
                 onClick={handleResend}
                 disabled={resending}
-                className="text-xs text-indigo-600 font-semibold disabled:opacity-50"
+                className="text-xs text-indigo-600 font-semibold disabled:opacity-50 cursor-pointer"
               >
                 {resending ? "Sending..." : "Resend code"}
               </button>
