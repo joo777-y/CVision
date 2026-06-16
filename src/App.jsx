@@ -51,7 +51,7 @@ export default function App() {
           <Route path="/forgot-password" element={<ForgotPassword />}/>
           <Route path="/reset-password" element={<ResetPassword />}/>
           <Route path="/verify-reset-code" element={<VerifyResetCode />}/>
-          <Route path="/reset-password" element={<NewPassword />}/>
+          <Route path="/new-password" element={<NewPassword />}/>
 
 
           <Route
