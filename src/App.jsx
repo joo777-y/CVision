@@ -50,7 +50,7 @@ export default function App() {
           <Route path="/verify-otp" element={<Page />} />
           <Route path="/forgot-password" element={<ForgotPassword />}/>
           <Route path="/reset-password" element={<ResetPassword />}/>
-          <Route path="/verify-code" element={<VerifyResetCode />}/>
+          <Route path="/verify-reset-code" element={<VerifyResetCode />}/>
           <Route path="/reset-password" element={<NewPassword />}/>
 
 
