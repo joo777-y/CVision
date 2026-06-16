@@ -38,6 +38,7 @@ export default function CreateJobPage() {
   const set = (key) => (e) => setForm(f => ({ ...f, [key]: e.target.value }));
 
   const handleSubmit = async (isDraft = false) => {
+    console.log("FORM BEFORE SEND =>", form);
     setSubmitting(true);
     setError(null);
     try {
