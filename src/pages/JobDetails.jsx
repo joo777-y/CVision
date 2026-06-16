@@ -4,12 +4,12 @@ import { apiGet } from "../services/api";
 
 function InfoCard({ title, value, icon }) {
   return (
-    <div className="bg-white/70 backdrop-blur-sm border border-gray-100 rounded-2xl p-5 shadow-sm">
-      <div className="flex items-center gap-3 text-teal-600 mb-2">
-        <span className="text-2xl">{icon}</span>
+    <div className="bg-white/70 backdrop-blur-sm border border-gray-100 rounded-3xl p-6 shadow-sm hover:shadow transition-shadow">
+      <div className="flex items-center gap-3 text-teal-600 mb-3">
+        <span className="text-3xl">{icon}</span>
         <h4 className="font-medium text-gray-700">{title}</h4>
       </div>
-      <p className="text-xl font-semibold text-gray-800">{value || "غير محدد"}</p>
+      <p className="text-xl font-semibold text-gray-800">{value || "Not specified"}</p>
     </div>
   );
 }
@@ -39,7 +39,7 @@ export default function JobDetails() {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-teal-600 text-lg">جاري التحميل...</div>
+        <div className="text-teal-600 text-lg">Loading...</div>
       </div>
     );
   }
@@ -47,14 +47,14 @@ export default function JobDetails() {
   if (!job) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center text-gray-500">
-        لم يتم العثور على الوظيفة
+        Job not found
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - أهدى وأنظف */}
+      {/* Elegant Header */}
       <header className="bg-gradient-to-br from-teal-600 via-indigo-600 to-indigo-700 py-16">
         <div className="max-w-5xl mx-auto px-6">
           <div className="max-w-3xl">
@@ -63,10 +63,10 @@ export default function JobDetails() {
             </h1>
             
             <p className="text-indigo-100 text-xl mb-6">
-              {job.department || "الشركة"}
+              {job.department || "Company"}
             </p>
 
-            <div className="flex flex-wrap gap-6 text-indigo-100">
+            <div className="flex flex-wrap gap-6 text-indigo-100 text-lg">
               <div className="flex items-center gap-2">
                 <span>📍</span>
                 <span>{job.location}</span>
@@ -78,7 +78,7 @@ export default function JobDetails() {
               {job.experience && (
                 <div className="flex items-center gap-2">
                   <span>🧠</span>
-                  <span>{job.experience} سنوات خبرة</span>
+                  <span>{job.experience} years experience</span>
                 </div>
               )}
             </div>
@@ -92,58 +92,57 @@ export default function JobDetails() {
           <div className="lg:col-span-8 space-y-8">
             <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 md:p-10">
               
-              {/* Apply Button - Floating */}
+              {/* Apply Button */}
               <div className="flex justify-end mb-8">
                 <button
                   onClick={() => navigate("/job-application", { state: { job } })}
-                  className="bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700 text-white px-8 py-3.5 rounded-2xl font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2"
+                  className="bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-600 hover:to-indigo-700 text-white px-8 py-3.5 rounded-2xl font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center gap-2 text-lg"
                 >
-                  تقدم للوظيفة الآن
+                  Apply Now
                   <span>→</span>
                 </button>
               </div>
 
-              <Section title="وصف الوظيفة" content={job.description} />
-              <Section title="المتطلبات" content={job.requirements} />
-              <Section title="المسؤوليات" content={job.responsibilities} />
+              <Section title="Job Description" content={job.description} />
+              <Section title="Requirements" content={job.requirements} />
+              <Section title="Responsibilities" content={job.responsibilities} />
             </div>
           </div>
 
-          {/* Sidebar Info */}
+          {/* Sidebar */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-7 sticky top-6">
-              <h3 className="text-lg font-semibold text-gray-800 mb-6">معلومات الوظيفة</h3>
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-6">
+              <h3 className="text-xl font-semibold text-gray-800 mb-6">Job Information</h3>
               
               <div className="space-y-6">
                 <InfoCard 
-                  title="الراتب" 
+                  title="Salary Range" 
                   value={`${job.salaryRange?.min || "-"} - ${job.salaryRange?.max || "-"}`}
                   icon="💰" 
                 />
                 
                 <InfoCard 
-                  title="نوع الوظيفة" 
+                  title="Job Type" 
                   value={job.jobType}
                   icon="📋" 
                 />
                 
                 <InfoCard 
-                  title="الموقع" 
+                  title="Location" 
                   value={job.location}
                   icon="📍" 
                 />
 
                 <InfoCard 
-                  title="الخبرة المطلوبة" 
-                  value={`${job.experience || 0} سنوات`}
+                  title="Experience Required" 
+                  value={`${job.experience || 0} years`}
                   icon="⭐" 
                 />
               </div>
             </div>
 
-            {/* Additional calm info box if needed */}
-            <div className="bg-white/70 backdrop-blur-sm border border-gray-100 rounded-3xl p-6 text-sm text-gray-600">
-              تم النشر مؤخرًا
+            <div className="bg-white/70 backdrop-blur-sm border border-gray-100 rounded-3xl p-6 text-sm text-gray-600 text-center">
+              Posted recently
             </div>
           </div>
         </div>
@@ -152,7 +151,7 @@ export default function JobDetails() {
   );
 }
 
-// Reusable Section Component (أنظف)
+// Reusable Section Component
 function Section({ title, content }) {
   return (
     <div className="mb-10">
@@ -160,7 +159,7 @@ function Section({ title, content }) {
         {title}
       </h3>
       <div className="text-[15.5px] leading-relaxed text-gray-600 whitespace-pre-line">
-        {content || "غير متوفر حاليًا"}
+        {content || "Not provided"}
       </div>
     </div>
   );
