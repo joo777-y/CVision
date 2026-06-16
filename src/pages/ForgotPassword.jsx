@@ -23,14 +23,11 @@ export default function ForgotPassword() {
         email,
       });
 
-      navigate("/reset-password", {
+      navigate("/verify-reset-code", {
         state: { email },
       });
-
     } catch (err) {
-      setError(
-        err?.message || "Something went wrong"
-      );
+      setError(err?.message || "Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -39,7 +36,6 @@ export default function ForgotPassword() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-10">
       <div className="w-full max-w-sm">
-
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-600 mb-4 shadow-lg">
             📧
@@ -55,26 +51,19 @@ export default function ForgotPassword() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl shadow-indigo-100 p-8">
-
           {error && (
             <div className="mb-4 rounded-lg bg-red-50 border border-red-200 px-4 py-2 text-red-600 text-sm">
               {error}
             </div>
           )}
 
-          <div className="mb-5">
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Email Address
-            </label>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-4 py-3 rounded-xl border border-slate-200"
-            />
-          </div>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="w-full px-4 py-3 rounded-xl border border-slate-200 mb-4"
+          />
 
           <button
             onClick={handleSubmit}
