@@ -14,7 +14,9 @@ import ScrollToTop from "./components/ui/scrollToTop.jsx";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute.jsx";
 import Page from "./pages/Page.jsx";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
-import ResetPassword from "./pages/ResetPassword.jsx";
+import ResetPassword from "./pages/NewPassword.jsx";
+import VerifyResetCode from "./pages/VerifyResetCode.jsx";
+import NewPassword from "./pages/NewPassword.jsx";
 
 // ─── API CONFIG ────────────────────────────────────────────────────────────────
 const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000/api";
@@ -48,6 +50,8 @@ export default function App() {
           <Route path="/verify-otp" element={<Page />} />
           <Route path="/forgot-password" element={<ForgotPassword />}/>
           <Route path="/reset-password" element={<ResetPassword />}/>
+          <Route path="/verify-code" element={<VerifyResetCode />}/>
+          <Route path="/reset-password" element={<NewPassword />}/>
 
 
           <Route
