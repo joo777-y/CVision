@@ -8,13 +8,9 @@ export default function ApplyPage() {
   const location  = useLocation();
 
   // Job info passed via navigate state: navigate("/apply", { state: { job } })
-  const job = location.state?.job || {
-    title:      "Senior Frontend Developer",
-    company:    "Acme Inc.",
-    type:       "Remote",
-    employment: "Full-time",
-    id:         1,
-  };
+  const job = location.state?.job;
+
+  
 
   const EMPTY = {
     fullName:    "",

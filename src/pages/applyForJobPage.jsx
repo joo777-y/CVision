@@ -37,6 +37,7 @@ function JobDescription({ jobId }) {
 
 const JOB_TYPES = ["All Types", "Remote", "Onsite", "Hybrid"];
 
+
 function getPostedTime(date) {
 
   if (!date) return "Recently posted";
@@ -86,9 +87,8 @@ function getPostedTime(date) {
 // ============================================================
 // JobCard Component
 // ============================================================
-function JobCard({ job, onApply }){
-  const [expanded, setExpanded] = useState(false);
-  console.log(job);
+function JobCard({job}){
+  const navigate= useNavigate();
 
   return (
     <div className="bg-white border border-gray-200 rounded-md px-5 py-4 flex items-center justify-between hover:shadow-md transition-shadow">
@@ -132,32 +132,18 @@ function JobCard({ job, onApply }){
             </span>
           </div>
 
-          {/* Expanded Details */}
-            {expanded && (
-              <JobDescription jobId={job.id} />
-            )}
         </div>
       </div>
 
       {/* Right: Buttons */}
       <div className="flex items-center gap-2 ml-4 flex-shrink-0">
         <button
-          onClick={() => onApply(job)}
-          className="bg-gradient-to-br from-teal-500 to-indigo-600 hover:opacity-90 hover:bg-blue-700 text-white text-xs font-medium px-4 py-2 rounded transition-colors cursor-pointer"
+          onClick={() => navigate(`/jobs/${job.id}`)}
+          className="bg-gradient-to-br from-teal-500 to-indigo-600 hover:opacity-90 text-white text-xs font-medium px-4 py-2 rounded transition-colors cursor-pointer"
         >
-          Apply Now
+          View Details
         </button>
-        <button
-          onClick={() => setExpanded(!expanded)}
-          className="border border-gray-300 hover:bg-gray-50 text-gray-500 p-2 rounded transition-colors cursor-pointer"
-        >
-          <svg
-            className={`w-4 h-4 transition-transform ${expanded ? "rotate-180" : ""}`}
-            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
-          </svg>
-        </button>
+        
       </div>
     </div>
   );
@@ -218,10 +204,6 @@ export default function JobBoard() {
       return matchKeyword && matchLocation && matchType;
     });
 
-  // Navigate to apply page, passing job data via router state
-  const handleApply = (job) => {
-    navigate("/job-application", { state: { job } });
-  };
 
 
   return (
@@ -235,12 +217,14 @@ export default function JobBoard() {
             <p className="text-blue-200 text-xs mt-0.5">Browse the latest opportunities</p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="border border-white text-white text-sm px-4 py-1.5 rounded hover:bg-white hover:text-blue-600 transition-colors">
-              Browse Jobs
+            <button
+              onClick={() => navigate("/")}
+              className="px-3 py-1.5 rounded bg-white border border-slate-200 text-sm font-medium text-blue-600 hover:text-indigo-600 hover:border-indigo-300 transition-all shadow-sm cursor-pointer"
+              >← Back to Home
             </button>
             <button
               onClick={() => navigate("/login-page")}
-              className="bg-white text-blue-600 text-sm font-medium px-4 py-1.5 rounded hover:bg-blue-50 transition-colors"
+              className="bg-white text-blue-600 text-sm font-medium px-4 py-1.5 rounded hover:bg-blue-50 transition-colors cursor-pointer"
             >
               Sign In
             </button>
@@ -293,7 +277,7 @@ export default function JobBoard() {
         ) : filtered.length > 0 ? (
           <div className="flex flex-col gap-3">
             {filtered.map(job => (
-              <JobCard key={job.id} job={job} onApply={handleApply} />
+              <JobCard key={job.id} job={job} />
             ))}
           </div>
         ) : (

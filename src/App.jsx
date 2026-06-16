@@ -17,6 +17,7 @@ import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/NewPassword.jsx";
 import VerifyResetCode from "./pages/VerifyResetCode.jsx";
 import NewPassword from "./pages/NewPassword.jsx";
+import JobDetails from "./pages/JobDetails.jsx";
 
 // ─── API CONFIG ────────────────────────────────────────────────────────────────
 const API_BASE_URL = import.meta.env?.VITE_API_BASE_URL || "http://localhost:5000/api";
@@ -52,6 +53,7 @@ export default function App() {
           <Route path="/reset-password" element={<ResetPassword />}/>
           <Route path="/verify-reset-code" element={<VerifyResetCode />}/>
           <Route path="/new-password" element={<NewPassword />}/>
+          <Route path="/jobs/:id" element={<JobDetails />} />
 
 
           <Route
