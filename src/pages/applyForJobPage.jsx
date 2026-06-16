@@ -37,6 +37,52 @@ function JobDescription({ jobId }) {
 
 const JOB_TYPES = ["All Types", "Remote", "Onsite", "Hybrid"];
 
+function getPostedTime(date) {
+
+  if (!date) return "Recently posted";
+
+
+  const now = new Date();
+
+  const created = new Date(date);
+
+
+  const diff =
+    Math.floor(
+      (now - created) / 1000
+    );
+
+
+  const minutes = Math.floor(diff / 60);
+
+  const hours = Math.floor(minutes / 60);
+
+  const days = Math.floor(hours / 24);
+
+
+
+  if (minutes < 60) {
+    return `${minutes || 1} min ago`;
+  }
+
+
+  if (hours < 24) {
+    return `${hours} hour${hours > 1 ? "s" : ""} ago`;
+  }
+
+
+  if (days < 30) {
+    return `${days} day${days > 1 ? "s" : ""} ago`;
+  }
+
+
+  const months = Math.floor(days / 30);
+
+
+  return `${months} month${months > 1 ? "s" : ""} ago`;
+
+}
+
 // ============================================================
 // JobCard Component
 // ============================================================
@@ -82,7 +128,7 @@ function JobCard({ job, onApply }){
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              Recently posted
+              {getPostedTime(job.createdAt)}
             </span>
           </div>
 
