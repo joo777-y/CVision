@@ -88,7 +88,7 @@ function getPostedTime(date) {
 // ============================================================
 function JobCard({ job, onApply }){
   const [expanded, setExpanded] = useState(false);
-  // const navigate = useNavigate();
+  console.log(job);
 
   return (
     <div className="bg-white border border-gray-200 rounded-md px-5 py-4 flex items-center justify-between hover:shadow-md transition-shadow">
@@ -128,7 +128,7 @@ function JobCard({ job, onApply }){
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
               </svg>
-              {getPostedTime(job.createdAt)}
+              {getPostedTime(job.postedDate)}
             </span>
           </div>
 
