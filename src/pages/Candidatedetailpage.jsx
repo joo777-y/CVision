@@ -299,6 +299,8 @@ export default function CandidateDetailPage({
 
         const cv = res.data;
 
+        console.log("DETAIL CV =>", cv);
+
         const formattedCandidate = {
           id: cv._id,
 
@@ -322,7 +324,7 @@ export default function CandidateDetailPage({
           educationMatch: cv.scoreBreakdown?.educationScore || 0,
 
           // AI SKILLS
-          skills: cv.parsedData?.aiAnalysis?.technicalSkills || [],
+          skills: cv.parsedData?.aiMatching?.technicalSkills || [],
 
           experience: [
             {
