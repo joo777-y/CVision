@@ -301,6 +301,10 @@ export default function CandidateDetailPage({
 
         console.log("DETAIL CV =>", cv);
 
+        console.log("RAW CV DATA =>", cv);
+console.log("PARSED =>", cv.parsedData);
+console.log("AI =>", cv.aiAnalysis);
+
         const formattedCandidate = {
           id: cv._id,
 
