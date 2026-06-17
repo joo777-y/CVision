@@ -584,7 +584,7 @@ export default function CandidateDetailPage({
             </p>
 
             <div className="flex flex-wrap gap-2">
-              {(candidate.aiMatching?.matchedSkills || []).map((skill) => (
+              {(candidate.aiAnalysis?.matchedSkills || []).map((skill) => (
                 <span
                   key={skill}
                   className="
