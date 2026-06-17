@@ -4,57 +4,6 @@ import ShortlistDialog from "../components/DialogMessage/Shortlistdialog";
 import { apiGet, apiPatch, apiPost } from "../services/api";
 import { toast } from "react-hot-toast";
 
-// ─── MOCK DETAIL DATA ──────────────────────────────────────────────────────────
-// When connecting to backend, replace with:
-// const { data: candidate, loading, error } = useApi(`/applications/${id}`);
-// const MOCK_CANDIDATE_DETAIL = {
-//   id: 1,
-//   name: "Ahmed Samir",
-//   job: "Senior Frontend Developer",
-//   status: "new",
-//   cvScore: 85,
-//   skillMatch: 90,
-//   experienceMatch: 85,
-//   educationMatch: 80,
-//   cvUrl: "#", // replace with actual CV URL from backend
-//   contact: {
-//     email: "Ahmed.Samir@example.com",
-//     phone: "(555) 123-4567",
-//     location: "New York, NY",
-//     website: "Ahmedsamir.com",
-//   },
-//   skills: ["React", "TypeScript", "JavaScript", "HTML", "CSS", "Redux", "Node.js", "Git", "Responsive Design", "REST APIs"],
-//   experience: [
-//     {
-//       id: 1,
-//       title: "Frontend Developer",
-//       company: "Tech Solutions Inc.",
-//       location: "Boston, MA",
-//       from: "Jan 2019",
-//       to: "Present",
-//       description: "Led development of responsive web applications using React and TypeScript. Implemented state management with Redux and optimized performance.",
-//     },
-//     {
-//       id: 2,
-//       title: "Junior Developer",
-//       company: "WebDev Agency",
-//       location: "New York, NY",
-//       from: "Mar 2017",
-//       to: "Dec 2018",
-//       description: "Developed and maintained client websites. Collaborated with designers to implement UI/UX improvements.",
-//     },
-//   ],
-//   education: [
-//     {
-//       id: 1,
-//       degree: "BS Computer Science",
-//       school: "University of Technology",
-//       location: "New York, NY",
-//       from: "2013",
-//       to: "2017",
-//     },
-//   ],
-// };
 
 // ─── ICONS ─────────────────────────────────────────────────────────────────────
 const Ico = ({ size = 16, children }) => (
@@ -163,21 +112,20 @@ const AVATAR_COLORS = [
   "bg-pink-500",
   "bg-teal-500",
 ];
-function Avatar({ name, size = "w-14 h-14", textSize = "text-lg" }) {
+function Avatar({ name = "", size = "w-14 h-14", textSize = "text-lg" }) {
+
   const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
-  const color = AVATAR_COLORS[name.charCodeAt(0) % AVATAR_COLORS.length];
+    ? name.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase()
+    : "NA";
+
+  const color = AVATAR_COLORS[name?.charCodeAt(0) % AVATAR_COLORS.length];
+
   return (
-    <div
-      className={`${size} ${color} rounded-full flex items-center justify-center text-white font-bold ${textSize} shrink-0`}
-    >
+    <div className={`${size} ${color} rounded-full flex items-center justify-center text-white font-bold ${textSize} shrink-0`}>
       {initials}
     </div>
   );
+
 }
 
 // ─── SCORE RING ────────────────────────────────────────────────────────────────
@@ -289,10 +237,7 @@ export default function CandidateDetailPage({
   onBack,
   onStatusChange,
 }) {
-  // ── Connect to backend: ───────────────────────────────────────────────────────
-  // const { data: candidate, loading, error } = useApi(`/applications/${candidateId}`);
-  // if (loading) return <LoadingSpinner />;
-  // if (error)   return <ErrorState message={error} />;
+
   // ─────────────────────────────────────────────────────────────────────────────
   const [candidate, setCandidate] = useState(null);
 
@@ -407,8 +352,6 @@ export default function CandidateDetailPage({
 
         setCandidate(formattedCandidate);
         setStatus(cv.status);
-
-        setStatus(res.data.status);
       } catch (err) {
         console.error(err);
       }
