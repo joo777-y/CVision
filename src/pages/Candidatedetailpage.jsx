@@ -306,55 +306,51 @@ console.log("PARSED =>", cv.parsedData);
 console.log("AI =>", cv.aiAnalysis);
 
         const formattedCandidate = {
-          id: cv._id,
 
-          name: cv.fullName,
+  id: cv.id,
 
-          job: cv.jobId?.title || "Unknown Job",
+  name: cv.name || "Unknown",
 
-          email: cv.email,
+  job: cv.job || "Unknown Job",
 
-          phoneNumber: cv.phoneNumber,
+  email: cv.email,
 
-          status: cv.status,
+  status: cv.status,
 
-          // AI SCORE
-          cvScore: cv.matchingScore || 0,
+  cvScore: cv.cvScore || 0,
 
-          skillMatch: cv.scoreBreakdown?.skillsScore || 0,
 
-          experienceMatch: cv.scoreBreakdown?.experienceScore || 0,
+  skillMatch: cv.skillMatch || 0,
 
-          educationMatch: cv.scoreBreakdown?.educationScore || 0,
+  experienceMatch: cv.experienceMatch || 0,
 
-          // AI SKILLS
-          skills: cv.parsedData?.aiMatching?.technicalSkills || [],
+  educationMatch: cv.educationMatch || 0,
 
-          experience: [
-            {
-              id: 1,
-              title: "Experience",
-              company: "",
-              location: "",
-              from: "",
-              to: "",
-              description: cv.parsedData?.aiAnalysis?.experience || "",
-            },
-          ],
 
-          education: [
-            {
-              id: 1,
-              degree: cv.parsedData?.aiAnalysis?.education || "",
-              school: "",
-              location: "",
-              from: "",
-              to: "",
-            },
-          ],
+  skills: cv.skills || [],
 
-          aiMatching: cv.aiMatching,
-        };
+
+  experience: cv.experience || [],
+
+
+  education: [
+    {
+      degree: cv.education || "No education data",
+      school:"",
+      location:"",
+      from:"",
+      to:""
+    }
+  ],
+
+
+  aiMatching: cv.aiMatching || {
+    matchedSkills:[],
+    missingSkills:[],
+    explanation:""
+  }
+
+};
 
         setCandidate(formattedCandidate);
         setStatus(cv.status);
