@@ -622,6 +622,6 @@ export default function CandidateDetailPage({
           </div>
         </div>
       </div>
-    </div>
+   
   );
 }
