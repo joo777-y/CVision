@@ -162,7 +162,7 @@ export default function ApplyPage() {
             <span className="font-semibold text-gray-600">{job.company}</span> has been received.
           </p>
           <button
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/apply-for-job")}
             className="w-full bg-gradient-to-br from-teal-500 to-indigo-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer"
           >
             Back to Job Listings
