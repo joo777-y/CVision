@@ -570,52 +570,7 @@ export default function CandidateDetailPage({
             </div>
           </div>
 
-          {/* AI Matching */}
-          <div className="bg-white rounded-2xl border border-gray-100 px-5 py-5">
-            <h3 className="text-sm font-bold text-gray-700 mb-4">
-              AI Matching Analysis
-            </h3>
-
-            {/* Matched Skills */}
-            {/* Matched Skills */}
-            <p className="text-xs font-semibold text-green-600 mb-2">
-              Matched Skills
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              {(candidate.aiMatching?.matchedSkills || []).map((skill) => (
-                <span
-                  key={skill}
-                  className="
-        text-xs px-3 py-1.5 rounded-full
-        bg-green-50 text-green-600
-        border border-green-100
-        "
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-
-            {/* Missing Skills */}
-            <p className="text-xs font-semibold text-red-600 mt-4 mb-2">
-              Missing Skills
-            </p>
-
-            <div className="flex flex-wrap gap-2">
-              {(candidate.aiMatching?.missingSkills || []).map((skill) => (
-                <span
-                  key={skill}
-                  className="
-        text-xs px-3 py-1.5 rounded-full
-        bg-red-50 text-red-600
-        border border-red-100
-        "
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
+         
 
             {/* Explanation */}
             {candidate.aiMatching?.explanation && (
