@@ -4,7 +4,6 @@ import ShortlistDialog from "../components/DialogMessage/Shortlistdialog";
 import { apiGet, apiPatch, apiPost } from "../services/api";
 import { toast } from "react-hot-toast";
 
-
 // ─── ICONS ─────────────────────────────────────────────────────────────────────
 const Ico = ({ size = 16, children }) => (
   <svg
@@ -113,19 +112,24 @@ const AVATAR_COLORS = [
   "bg-teal-500",
 ];
 function Avatar({ name = "", size = "w-14 h-14", textSize = "text-lg" }) {
-
   const initials = name
-    ? name.split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase()
+    ? name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
     : "NA";
 
   const color = AVATAR_COLORS[name?.charCodeAt(0) % AVATAR_COLORS.length];
 
   return (
-    <div className={`${size} ${color} rounded-full flex items-center justify-center text-white font-bold ${textSize} shrink-0`}>
+    <div
+      className={`${size} ${color} rounded-full flex items-center justify-center text-white font-bold ${textSize} shrink-0`}
+    >
       {initials}
     </div>
   );
-
 }
 
 // ─── SCORE RING ────────────────────────────────────────────────────────────────
@@ -237,7 +241,6 @@ export default function CandidateDetailPage({
   onBack,
   onStatusChange,
 }) {
-
   // ─────────────────────────────────────────────────────────────────────────────
   const [candidate, setCandidate] = useState(null);
 
@@ -302,12 +305,11 @@ export default function CandidateDetailPage({
         console.log("DETAIL CV =>", cv);
 
         console.log("RAW CV DATA =>", cv);
-console.log("PARSED =>", cv.parsedData);
-console.log("AI =>", cv.aiAnalysis);
+        console.log("PARSED =>", cv.parsedData);
+        console.log("AI =>", cv.aiAnalysis);
 
         const formattedCandidate = {
-
-  id: cv.id,
+          id: cv.id,
 
   name: cv.name || "Unknown",
 
@@ -315,42 +317,38 @@ console.log("AI =>", cv.aiAnalysis);
 
   email: cv.email,
 
+  phoneNumber: cv.phoneNumber,
+
   status: cv.status,
 
-  cvScore: cv.cvScore || 0,
+          cvScore: cv.cvScore || 0,
 
+          skillMatch: cv.skillMatch || 0,
 
-  skillMatch: cv.skillMatch || 0,
+          experienceMatch: cv.experienceMatch || 0,
 
-  experienceMatch: cv.experienceMatch || 0,
+          educationMatch: cv.educationMatch || 0,
 
-  educationMatch: cv.educationMatch || 0,
+          skills: cv.skills || [],
 
+          experience: cv.experience || [],
 
-  skills: cv.skills || [],
+          education: [
+            {
+              degree: cv.education || "No education data",
+              school: "",
+              location: "",
+              from: "",
+              to: "",
+            },
+          ],
 
-
-  experience: cv.experience || [],
-
-
-  education: [
-    {
-      degree: cv.education || "No education data",
-      school:"",
-      location:"",
-      from:"",
-      to:""
-    }
-  ],
-
-
-  aiMatching: cv.aiMatching || {
-    matchedSkills:[],
-    missingSkills:[],
-    explanation:""
-  }
-
-};
+          aiMatching: cv.aiMatching || {
+            matchedSkills: [],
+            missingSkills: [],
+            explanation: "",
+          },
+        };
 
         setCandidate(formattedCandidate);
         setStatus(cv.status);
@@ -575,7 +573,6 @@ console.log("AI =>", cv.aiAnalysis);
           </div>
 
           {/* AI Matching */}
-          
         </div>
 
         {/* ── RIGHT COLUMN ── */}
