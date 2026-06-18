@@ -17,7 +17,7 @@ export default function AppRow({ app }) {
             {app.name || app.applicantName || "Unknown Candidate"}
           </span>
 
-          <StatusBadge status={app.status} />
+          <StatusBadge status={"processed"} />
         </div>
         <div className="flex items-center gap-1 text-xs text-gray-400">
           <BagIcon s={12} />{app.job || app.jobTitle}
