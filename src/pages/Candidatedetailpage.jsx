@@ -300,6 +300,9 @@ export default function CandidateDetailPage({
       try {
         const res = await apiGet(`/candidates/${candidateId}`);
 
+console.log("FULL RESPONSE =>", res);
+console.log("RESPONSE DATA =>", res.data);
+
         const cv = res.data.candidate;
 
         console.log("DETAIL CV =>", cv);
