@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiPost } from "../services/api";
 
-const ROLES = ["HR Professional", "Employee", "Manager", "Admin"];
+const ROLES = ["HR Professional"];
 
 export default function SignUpPage() {
   const [role, setRole] = useState("HR Professional");
