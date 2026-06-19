@@ -154,7 +154,7 @@ export default function CandidatesPage() {
 
       {/* Cards grid */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {filtered.map((app) => (
             <div key={app.id} className="relative">
               <button
@@ -162,7 +162,7 @@ export default function CandidatesPage() {
                   e.stopPropagation();
                   handleDelete(app.id);
                 }}
-                className="absolute top-9 right-3 z-10 text-red-500 hover:text-red-700"
+                className="absolute top-16 right-3 z-10 text-red-500 hover:text-red-700"
               >
                 <Trash2 size={20} />
               </button>
