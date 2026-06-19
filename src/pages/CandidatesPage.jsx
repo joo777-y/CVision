@@ -21,9 +21,17 @@ export default function CandidatesPage() {
 
   // Merge mock data with any local overrides
   const candidatesWithStatus = candidates.map((a) => ({
-    ...a,
-    status: statusOverrides[a.id] ?? a.status,
-  }));
+  ...a,
+  status:
+    statusOverrides[a.id] ??
+    (
+      a.status === "pending"
+        ? "new"
+        : a.status === "processed"
+        ? "shortlisted"
+        : a.status.toLowerCase()
+    ),
+}));
 
   const filtered = candidatesWithStatus.filter((a) => {
     const matchSearch =

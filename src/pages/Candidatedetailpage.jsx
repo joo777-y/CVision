@@ -313,7 +313,7 @@ export default function CandidateDetailPage({
       try {
         const res = await apiGet(`/candidates/${candidateId}`);
 
-const cv = res.data;
+        const cv = res.data;
         console.log("DETAIL CV =>", cv);
 
         console.log("RAW CV DATA =>", cv);
@@ -323,15 +323,15 @@ const cv = res.data;
         const formattedCandidate = {
           id: cv.id,
 
-  name: cv.name || "Unknown",
+          name: cv.name || "Unknown",
 
-  job: cv.job || "Unknown Job",
+          job: cv.job || "Unknown Job",
 
-  email: cv.email,
+          email: cv.email,
 
-  phoneNumber: cv.phoneNumber,
+          phoneNumber: cv.phoneNumber,
 
-  status: cv.status,
+          status: cv.status,
 
           cvScore: cv.cvScore || 0,
 
@@ -363,7 +363,11 @@ const cv = res.data;
         };
 
         setCandidate(formattedCandidate);
-        setStatus(mapStatus(cv.status));
+        setStatus(mapStatus(cv.status)) === "pending"
+          ? "new"
+          : cv.status === "processed"
+            ? "shortlisted"
+            : cv.status;
       } catch (err) {
         console.error(err);
       }
