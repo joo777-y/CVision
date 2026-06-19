@@ -4,7 +4,7 @@ import JobRow from "../components/jobs/JobRow";
 import AppRow from "../components/applications/AppRow";
 import StatCard from "../components/ui/StatCard";
 import { Navigate, useNavigate } from "react-router-dom";
-import { apiGet } from "../services/api";
+import { apiDelete, apiGet } from "../services/api";
 
 // ─── DASHBOARD PAGE ────────────────────────────────────────────────────────────
 export default function DashboardPage() {
@@ -37,6 +37,20 @@ export default function DashboardPage() {
 
       fetchDashboard();
     }, []);
+
+    const handleDeleteJob = async (jobId) => {
+  try {
+    await apiDelete(`/jobs/${jobId}`);
+
+    setDashboardData((prev) => ({
+      ...prev,
+      jobs: prev.jobs.filter((job) => job.id !== jobId),
+    }));
+
+  } catch (err) {
+    console.error("Delete job failed:", err);
+  }
+};
 
     if (loading) {
       return <p className="p-6">Loading dashboard...</p>;
@@ -99,6 +113,7 @@ export default function DashboardPage() {
           <JobRow
             key={job.id} job={job}
             onViewApplicants={(j) => navigate(`/candidates`)}
+            onDelete={handleDeleteJob}
           />
         ))}
       </div>

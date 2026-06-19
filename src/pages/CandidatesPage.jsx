@@ -162,7 +162,7 @@ export default function CandidatesPage() {
                   e.stopPropagation();
                   handleDelete(app.id);
                 }}
-                className="absolute top-20 right-3 z-10 text-red-500 hover:text-red-700"
+                className="absolute top-20 right-3 z-10 text-red-500 hover:text-red-700 cursor-pointer"
               >
                 <Trash2 size={20} />
               </button>
