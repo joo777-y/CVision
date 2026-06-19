@@ -2,36 +2,29 @@ import { useState, useEffect } from "react";
 import { ChevronDown, SearchIcon } from "../components/ui/Icons";
 import CandidateCard from "../components/applications/CandidateCard";
 import CandidateDetailPage from "./Candidatedetailpage";
-import { apiGet } from "../services/api";
+import { apiGet, apiDelete } from "../services/api";
+import { Trash2 } from "lucide-react";
 
 // ─── CANDIDATES PAGE ───────────────────────────────────────────────────────────
 export default function CandidatesPage() {
-  const [search, setSearch]           = useState("");
-  const [statusFilter, setStatus]     = useState("All status");
-  const [scoreFilter, setScore]       = useState("All Scores");
-  const [selectedId, setSelectedId]   = useState(null); // null = list view
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatus] = useState("All status");
+  const [scoreFilter, setScore] = useState("All Scores");
+  const [selectedId, setSelectedId] = useState(null); // null = list view
   const [candidates, setCandidates] = useState([]);
-
-  // When connected to backend, replace with:
-  // const { data, loading, error, refetch } = useApi("/applications");
-  // const applications = data || [];
-  // const applications = MOCK_APPLICATIONS;
-
-  // Local status overrides — keyed by candidate id
-  // When backend is connected, this won't be needed (refetch after patch)
   const [statusOverrides, setStatusOverrides] = useState({});
 
   const handleStatusChange = (id, newStatus) => {
-    setStatusOverrides(prev => ({ ...prev, [id]: newStatus }));
+    setStatusOverrides((prev) => ({ ...prev, [id]: newStatus }));
   };
 
   // Merge mock data with any local overrides
-  const candidatesWithStatus = candidates.map(a => ({
+  const candidatesWithStatus = candidates.map((a) => ({
     ...a,
     status: statusOverrides[a.id] ?? a.status,
   }));
 
-  const filtered = candidatesWithStatus.filter(a => {
+  const filtered = candidatesWithStatus.filter((a) => {
     const matchSearch =
       a.name.toLowerCase().includes(search.toLowerCase()) ||
       a.job.toLowerCase().includes(search.toLowerCase());
@@ -39,19 +32,25 @@ export default function CandidatesPage() {
       statusFilter === "All status" || a.status === statusFilter.toLowerCase();
     const matchScore =
       scoreFilter === "All Scores" ||
-      (scoreFilter === "90+"      && a.cvScore >= 90) ||
-      (scoreFilter === "80-89"    && a.cvScore >= 80 && a.cvScore < 90) ||
-      (scoreFilter === "70-79"    && a.cvScore >= 70 && a.cvScore < 80) ||
+      (scoreFilter === "90+" && a.cvScore >= 90) ||
+      (scoreFilter === "80-89" && a.cvScore >= 80 && a.cvScore < 90) ||
+      (scoreFilter === "70-79" && a.cvScore >= 70 && a.cvScore < 80) ||
       (scoreFilter === "Below 70" && a.cvScore < 70);
     return matchSearch && matchStatus && matchScore;
   });
 
-  const statuses    = ["All status", "New", "Shortlisted", "Reviewed", "Rejected", "Hired"];
+  const statuses = [
+    "All status",
+    "New",
+    "Shortlisted",
+    "Reviewed",
+    "Rejected",
+    "Hired",
+  ];
   const scoreRanges = ["All Scores", "90+", "80-89", "70-79", "Below 70"];
 
-
   useEffect(() => {
-  const fetchCandidates = async () => {
+    const fetchCandidates = async () => {
       try {
         const res = await apiGet("/candidates");
 
@@ -63,6 +62,25 @@ export default function CandidatesPage() {
 
     fetchCandidates();
   }, []);
+
+  const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this candidate?",
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await apiDelete(`/candidates/${id}`);
+
+      setCandidates((prev) => prev.filter((candidate) => candidate.id !== id));
+
+      alert("Candidate deleted successfully");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete candidate");
+    }
+  };
 
   // ── Detail view ──────────────────────────────────────────────────────────────
   if (selectedId !== null) {
@@ -95,7 +113,7 @@ export default function CandidatesPage() {
           </span>
           <input
             value={search}
-            onChange={e => setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             placeholder="Search candidates..."
             className="w-full border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 bg-white"
           />
@@ -105,10 +123,12 @@ export default function CandidatesPage() {
         <div className="relative">
           <select
             value={statusFilter}
-            onChange={e => setStatus(e.target.value)}
+            onChange={(e) => setStatus(e.target.value)}
             className="appearance-none border border-gray-200 rounded-xl px-4 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-600 w-full sm:w-auto"
           >
-            {statuses.map(s => <option key={s}>{s}</option>)}
+            {statuses.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
           </select>
           <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
             <ChevronDown />
@@ -119,10 +139,12 @@ export default function CandidatesPage() {
         <div className="relative">
           <select
             value={scoreFilter}
-            onChange={e => setScore(e.target.value)}
+            onChange={(e) => setScore(e.target.value)}
             className="appearance-none border border-gray-200 rounded-xl px-4 pr-9 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-600 w-full sm:w-auto"
           >
-            {scoreRanges.map(s => <option key={s}>{s}</option>)}
+            {scoreRanges.map((s) => (
+              <option key={s}>{s}</option>
+            ))}
           </select>
           <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
             <ChevronDown />
@@ -133,19 +155,32 @@ export default function CandidatesPage() {
       {/* Cards grid */}
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {filtered.map(app => (
-            <div
-              key={app.id}
-              onClick={() => setSelectedId(app.id)}
-              className="cursor-pointer"
-            >
-              <CandidateCard app={app} />
+          {filtered.map((app) => (
+            <div key={app.id} className="relative">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDelete(app.id);
+                }}
+                className="absolute top-3 right-3 z-10 text-red-500 hover:text-red-700"
+              >
+                <Trash2 size={20} />
+              </button>
+
+              <div
+                onClick={() => setSelectedId(app.id)}
+                className="cursor-pointer"
+              >
+                <CandidateCard app={app} />
+              </div>
             </div>
           ))}
         </div>
       ) : (
         <div className="bg-white rounded-2xl border border-gray-100 px-6 py-16 text-center">
-          <p className="text-gray-300 text-sm">No candidates found matching your filters.</p>
+          <p className="text-gray-300 text-sm">
+            No candidates found matching your filters.
+          </p>
         </div>
       )}
     </div>
