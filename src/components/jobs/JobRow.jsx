@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import { BagIcon, PinIcon, UsersIcon } from "../ui/Icons";
 
 // ─── JOB ROW ───────────────────────────────────────────────────────────────────
@@ -43,7 +44,7 @@ export default function JobRow({ job, onViewApplicants, onDelete }) {
   onClick={() => onDelete(job.id)}
   className="text-red-500 hover:text-red-700 text-sm font-medium cursor-pointer"
 >
-  Delete
+  <Trash2 size={20} />
 </button>
 
         <button
