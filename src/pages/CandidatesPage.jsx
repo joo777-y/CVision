@@ -72,18 +72,22 @@ export default function CandidatesPage() {
     if (!confirmDelete) return;
 
     try {
-      await apiDelete(`/candidates/${id}`);
+  await apiDelete(`/cvs/${id}`);
 
-      setCandidates((prev) => prev.filter((candidate) => candidate.id !== id));
+  setCandidates((prev) =>
+    prev.filter((candidate) => candidate.id !== id)
+  );
 
-      toast.success("Candidate deleted successfully");
+  toast.success("Candidate deleted successfully");
 
-       window.dispatchEvent(
+  window.dispatchEvent(
     new Event("candidateDeleted")
   );
-    } catch (err) {
-      toast.error("Failed to delete candidate");
-    }
+
+} catch (err) {
+  console.error(err);
+  toast.error("Failed to delete candidate");
+}
   };
 
   // ── Detail view ──────────────────────────────────────────────────────────────
