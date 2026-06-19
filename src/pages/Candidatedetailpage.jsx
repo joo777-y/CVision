@@ -83,6 +83,16 @@ const CheckIcon = () => (
   </Ico>
 );
 
+const mapStatus = (status) => {
+  const map = {
+    pending: "new",
+    processed: "shortlisted",
+    rejected: "rejected",
+  };
+
+  return map[status] || status?.toLowerCase();
+};
+
 // ─── STATUS BADGE ──────────────────────────────────────────────────────────────
 const STATUS_STYLES = {
   new: "bg-blue-100 text-blue-700",
@@ -93,9 +103,12 @@ const STATUS_STYLES = {
 };
 
 function StatusBadge({ status }) {
+  const key = status?.toLowerCase();
+
   return (
     <span
-      className={`text-xs px-3 py-1 rounded-full font-medium capitalize ${STATUS_STYLES[status] || "bg-gray-100 text-gray-600"}`}
+      className={`text-xs px-3 py-1 rounded-full font-medium capitalize 
+      ${STATUS_STYLES[key] || "bg-gray-100 text-gray-600"}`}
     >
       {status}
     </span>
@@ -300,8 +313,7 @@ export default function CandidateDetailPage({
       try {
         const res = await apiGet(`/candidates/${candidateId}`);
 
-        const cv = res.data;
-
+const cv = res.data.candidate;
         console.log("DETAIL CV =>", cv);
 
         console.log("RAW CV DATA =>", cv);
@@ -351,7 +363,7 @@ export default function CandidateDetailPage({
         };
 
         setCandidate(formattedCandidate);
-        setStatus(cv.status);
+        setStatus(mapStatus(cv.status));
       } catch (err) {
         console.error(err);
       }
