@@ -54,9 +54,9 @@ export default function LoginPage() {
         console.error("LOGIN ERROR:", err);
 
         setErrors({
-          form:
-            err?.response?.data?.message ||
-            "Unknown error",
+          form: err.message.includes("Invalid")
+      ? "Email or password is incorrect"
+      : err.message,
         });
       } finally {
         setLoading(false);
