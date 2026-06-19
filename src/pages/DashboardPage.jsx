@@ -5,6 +5,7 @@ import AppRow from "../components/applications/AppRow";
 import StatCard from "../components/ui/StatCard";
 import { Navigate, useNavigate } from "react-router-dom";
 import { apiDelete, apiGet } from "../services/api";
+import toast from "react-hot-toast";
 
 // ─── DASHBOARD PAGE ────────────────────────────────────────────────────────────
 export default function DashboardPage() {
@@ -39,6 +40,12 @@ export default function DashboardPage() {
     }, []);
 
     const handleDeleteJob = async (jobId) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this job?"
+  );
+
+  if (!confirmDelete) return;
+
   try {
     await apiDelete(`/jobs/${jobId}`);
 
@@ -47,8 +54,11 @@ export default function DashboardPage() {
       jobs: prev.jobs.filter((job) => job.id !== jobId),
     }));
 
+    toast.success("Job deleted successfully");
+
   } catch (err) {
-    console.error("Delete job failed:", err);
+    console.error(err);
+    toast.error("Failed to delete job");
   }
 };
 
