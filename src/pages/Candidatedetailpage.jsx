@@ -313,7 +313,7 @@ export default function CandidateDetailPage({
       try {
         const res = await apiGet(`/candidates/${candidateId}`);
 
-const cv = res.data.candidate;
+const cv = res.data;
         console.log("DETAIL CV =>", cv);
 
         console.log("RAW CV DATA =>", cv);
