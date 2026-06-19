@@ -154,7 +154,7 @@ export default function CandidatesPage() {
 
       {/* Cards grid */}
       {filtered.length > 0 ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 h-8">
           {filtered.map((app) => (
             <div key={app.id} className="relative">
               <button
