@@ -95,12 +95,12 @@ export async function apiGet(endpoint) {
 
 
 export const apiDelete = async (url) => {
-  const token = localStorage.getItem("token");
+  const accessToken = localStorage.getItem("accessToken");
 
   const res = await fetch(`${API_BASE_URL}${url}`, {
     method: "DELETE",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
 
