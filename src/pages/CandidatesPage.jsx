@@ -4,6 +4,7 @@ import CandidateCard from "../components/applications/CandidateCard";
 import CandidateDetailPage from "./Candidatedetailpage";
 import { apiGet, apiDelete } from "../services/api";
 import { Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 // ─── CANDIDATES PAGE ───────────────────────────────────────────────────────────
 export default function CandidatesPage() {
@@ -75,10 +76,13 @@ export default function CandidatesPage() {
 
       setCandidates((prev) => prev.filter((candidate) => candidate.id !== id));
 
-      alert("Candidate deleted successfully");
+      toast.success("Candidate deleted successfully");
+
+       window.dispatchEvent(
+    new Event("candidateDeleted")
+  );
     } catch (err) {
-      console.error(err);
-      alert("Failed to delete candidate");
+      toast.error("Failed to delete candidate");
     }
   };
 

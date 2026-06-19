@@ -21,23 +21,41 @@ export default function DashboardPage() {
     : jobsData.filter((j) => j.status === tab.toLowerCase());
 
 
-      useEffect(() => {
       const fetchDashboard = async () => {
-        try {
-          const res = await apiGet("/dashboard/stats");
+  try {
+    const res = await apiGet("/dashboard/stats");
 
-          console.log("DASHBOARD DATA:", res);
+    console.log("DASHBOARD DATA:", res);
 
-          setDashboardData(res.data);
-        } catch (err) {
-          console.error(err);
-        } finally {
-          setLoading(false);
-        }
-      };
+    setDashboardData(res.data);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
-      fetchDashboard();
-    }, []);
+
+useEffect(() => {
+  fetchDashboard();
+
+  const refreshDashboard = () => {
+    fetchDashboard();
+  };
+
+  window.addEventListener(
+    "candidateDeleted",
+    refreshDashboard
+  );
+
+  return () => {
+    window.removeEventListener(
+      "candidateDeleted",
+      refreshDashboard
+    );
+  };
+
+}, []);
 
     const handleDeleteJob = async (jobId) => {
   const confirmDelete = window.confirm(
